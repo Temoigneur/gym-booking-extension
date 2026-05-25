@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "Gym Booking Wizard",
+  "version": "0.1.0",
+  "description": "Capture gym selectors to build a UIVision booking macro.",
+  "permissions": ["activeTab", "scripting", "storage", "tabs", "downloads", "sidePanel"],
+  "host_permissions": [
+    "https://*.lifetime.life/*",
+    "https://*.ltfitness.ca/*"
+  ],
+  "action": {
+    "default_title": "Open Booking Wizard"
+  },
+  "side_panel": {
+    "default_path": "popup/popup.html"
+  },
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.lifetime.life/*",
+        "https://*.ltfitness.ca/*"
+      ],
+      "js": ["content/recorder.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [{
+    "resources": ["images/*"],
+    "matches": ["<all_urls>"]
+  }]
+}
