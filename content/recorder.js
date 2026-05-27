@@ -6,12 +6,15 @@ const HIGHLIGHT_STYLE = '2px solid #FF6B35';
 
 function getBestSelector(el) {
   if (el.id && !/\d{4,}/.test(el.id)) {
+    // FIX: wrap template literal in backticks
     return { type: 'css', value: `#${el.id}` };
   }
   if (el.dataset.testid) {
+    // FIX: wrap template literal in backticks
     return { type: 'css', value: `[data-testid="${el.dataset.testid}"]` };
   }
   if (el.name) {
+    // FIX: wrap template literal in backticks
     return { type: 'css', value: `[name="${el.name}"]` };
   }
   const anchor = el.closest('[data-testid]');
@@ -19,6 +22,7 @@ function getBestSelector(el) {
     const tag = el.tagName.toLowerCase();
     return {
       type: 'xpath',
+      // FIX: wrap template literal in backticks
       value: `//*[@data-testid="${anchor.dataset.testid}"]//${tag}`
     };
   }
@@ -35,6 +39,9 @@ function getAbsoluteXPath(el) {
       if (sib.nodeType === Node.ELEMENT_NODE && sib.tagName === el.tagName) index++;
       sib = sib.previousSibling;
     }
+    // FIX: was `parts.unshift${el.tagName.toLowerCase()}[${index}]);`
+    //   — missing the opening "(" AND the backticks around the template literal.
+    //   This is the syntax error that recorder.js:88 was actually choking on.
     parts.unshift(`${el.tagName.toLowerCase()}[${index}]`);
     el = el.parentNode;
   }
@@ -59,19 +66,28 @@ document.addEventListener('mouseover', (e) => {
 
 document.addEventListener('click', (e) => {
   if (!isRecording) return;
+
+  // Guard immediately — context may already be gone
+  if (!chrome.runtime?.id) {
+    isRecording = false;
+    document.body.style.cursor = '';
+    if (lastHighlighted) lastHighlighted.style.outline = '';
+    lastHighlighted = null;
+    alert('Extension was reloaded. Please refresh this tab and try again.');
+    return;
+  }
+
   e.preventDefault();
   e.stopPropagation();
 
   let payload;
 
   if (recordingType === 'url') {
-    // Capture the CURRENT page URL before any redirect fires.
     payload = {
       type: 'ELEMENT_CAPTURED',
       captureType: 'url',
-      time: Date.now(),               // stamp every capture so the popup can tell new from old
+      time: Date.now(),
       url: window.location.href,
-      // Also strip query params for schedule URL — keep base path only
       cleanUrl: window.location.origin + window.location.pathname
     };
   } else {
@@ -79,7 +95,7 @@ document.addEventListener('click', (e) => {
     payload = {
       type: 'ELEMENT_CAPTURED',
       captureType: 'click',
-      time: Date.now(),               // stamp every capture so the popup can tell new from old
+      time: Date.now(),
       selector,
       tagName: e.target.tagName,
       innerText: e.target.innerText?.trim().slice(0, 80),
@@ -87,13 +103,23 @@ document.addEventListener('click', (e) => {
     };
   }
 
-  chrome.runtime.sendMessage(payload, (response) => {
-    console.log('[recorder] ELEMENT_CAPTURED ack:', response);
-  });
-
   clearHighlight();
   isRecording = false;
   document.body.style.cursor = '';
+
+  try {
+    chrome.runtime.sendMessage(payload, (response) => {
+      if (chrome.runtime.lastError) {
+        console.warn('[recorder] sendMessage error:', chrome.runtime.lastError.message);
+        return;
+      }
+      console.log('[recorder] ELEMENT_CAPTURED ack:', response);
+    });
+  } catch (err) {
+    console.warn('[recorder] sendMessage threw:', err.message);
+    alert('Extension was reloaded. Please refresh this tab and try again.');
+  }
+
 }, true);
 
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {

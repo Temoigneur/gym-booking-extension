@@ -102,6 +102,12 @@
       font-size: 13px;
     }
 
+    /* Force native date picker icon and calendar to render in light/white on dark background */
+    input[type="date"] {
+      color-scheme: dark;
+      cursor: pointer;
+    }
+
     .field-row textarea {
       resize: vertical;
     }
@@ -179,12 +185,14 @@
   <div id="captured-value"></div>
   <div id="input-area"></div>
   <button id="btn-capture" style="display:none">Capture</button>
-  <button id="btn-export" style="display:none">⬇️ Export gym-config.json</button>
+  <button id="btn-export" style="display:none">⬇️ Export Files</button>
   <button id="btn-restart" style="display:none">🔄 Start Over</button>
   <div class="btn-row">
     <button id="btn-back" style="display:none">← Back</button>
     <button id="btn-next">Next →</button>
   </div>
+  <script src="scheduler.js"></script>
+  <script src="exporter.js"></script>
   <script src="clubs-data.js"></script>
   <script src="popup.js"></script>
 </body>

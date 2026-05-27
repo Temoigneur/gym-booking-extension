@@ -6,15 +6,7 @@
 const CLUBS_DATA = {
   "Canada": {
     "ajax":          { name: "Ajax",          state: "ON", url: "https://my.lifetime.life/clubs/on/ajax.html" },
-    "barrie":        { name: "Barrie",        state: "ON", url: "https://my.lifetime.life/clubs/on/barrie.html" },
-    "etobicoke":     { name: "Etobicoke",     state: "ON", url: "https://my.lifetime.life/clubs/on/etobicoke.html" },
-    "kanata":        { name: "Kanata",        state: "ON", url: "https://my.lifetime.life/clubs/on/kanata.html" },
     "mississauga":   { name: "Mississauga",   state: "ON", url: "https://my.lifetime.life/clubs/on/mississauga.html" },
-    "oakville":      { name: "Oakville",      state: "ON", url: "https://my.lifetime.life/clubs/on/oakville.html" },
-    "ottawa":        { name: "Ottawa",        state: "ON", url: "https://my.lifetime.life/clubs/on/ottawa.html" },
-    "richmond-hill": { name: "Richmond Hill", state: "ON", url: "https://my.lifetime.life/clubs/on/richmond-hill.html" },
-    "scarborough":   { name: "Scarborough",   state: "ON", url: "https://my.lifetime.life/clubs/on/scarborough.html" },
-    "toronto":       { name: "Toronto",       state: "ON", url: "https://my.lifetime.life/clubs/on/toronto.html" },
     "woodbridge":    { name: "Woodbridge",    state: "ON", url: "https://my.lifetime.life/clubs/on/woodbridge.html" }
   },
   "USA-Northeast": {

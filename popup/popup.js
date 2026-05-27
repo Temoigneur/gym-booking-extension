@@ -1,7 +1,6 @@
 const STEPS = [
   'INTRO',
   'CAPTURE_CLUB',
-  'CAPTURE_LOGIN_URL',
   'CAPTURE_USERNAME_FIELD',
   'CAPTURE_PASSWORD_FIELD',
   'CAPTURE_SUBMIT_BUTTON',
@@ -9,7 +8,7 @@ const STEPS = [
   'CAPTURE_CLASS_NAME',
   'CAPTURE_TIMESLOT',
   'CAPTURE_PARTICIPANTS',
-  'CAPTURE_SPOT_PREFERENCES',   // ← NEW
+  'CAPTURE_SPOT_PREFERENCES',
   'SET_SCHEDULE',
   'EXPORT'
 ];
@@ -26,91 +25,81 @@ const STEP_META = {
     captureKey: null,
     captureType: null
   },
-    CAPTURE_CLUB: {
+  CAPTURE_CLUB: {
     title: 'Step 1 - Your Club',
     instruction: 'Select your Life Time club from the list below. This tells the macro which schedule page to navigate to.',
     captureKey: 'club',
     captureType: 'typed'
   },
-  
-  CAPTURE_LOGIN_URL: {
-    title: 'Step 2 - Login Page URL',
-    instruction: 'The login URL for Life Time is always the same - click "Capture URL" right now without navigating anywhere. We already know where it is.',
-    captureKey: 'loginUrl',
-    captureLabel: 'Capture URL',
-    captureType: 'hardcoded'
-  },
   CAPTURE_USERNAME_FIELD: {
-    title: 'Step 3 - Username Field',
-    instruction: 'Navigate to my.lifetime.life, click "Account" in the upper right, then "Log In". Once the login form appears, click "Capture Field" below, then click on the username/email input box on the page (an orange outline shows what you\'re hovering over).',
+    title: 'Step 2 - Username Field',
+    instruction: 'Navigate to my.lifetime.life, click "Account" in the upper right, then "Log In". Once the login form appears, click "Capture Field" below, then click on the username/email input box on the page (an orange outline shows what you\'re hovering over). If you are already logged in, just log out, then complete this step, so the macro can log you in every week when it makes the scheduled booking.',
     captureKey: 'usernameSelector',
     captureLabel: 'Capture Field',
     captureType: 'click'
   },
   CAPTURE_PASSWORD_FIELD: {
-    title: 'Step 4 - Password Field',
+    title: 'Step 3 - Password Field',
     instruction: 'Still on the login form, click "Capture Field" below, then click on the password input box on the page.',
     captureKey: 'passwordSelector',
     captureLabel: 'Capture Field',
     captureType: 'click'
   },
   CAPTURE_SUBMIT_BUTTON: {
-    title: 'Step 5 - Login Button',
+    title: 'Step 4 - Login Button',
     instruction: 'Click "Capture Button" below, then click the Log In or Submit button on the login form.',
     captureKey: 'submitSelector',
     captureLabel: 'Capture Button',
     captureType: 'click'
   },
   CAPTURE_SCHEDULE_URL: {
-    title: 'Step 6 - Class Schedule Page',
-    instruction: 'Click the Log In button on the page to log in to Life Time. Then navigate to the Class Schedule page showing the class you want to book on the date you\'d like.\n\nOnce you can see the class listed on screen, click "Capture URL" below.',
+    title: 'Step 5 - Class Schedule Page',
+    instruction: 'Click the Log In button on the page to log in to Lifetime, then navigate to the Class Schedule page showing the class you want to book on the date you\'d like.\n\nOnce you can see the class listed on screen, click "Capture URL" below, then click anywhere on the screen, even if a class is highlighted, the wizard will capture the "Class Schedule webpage URL".',
     captureKey: 'scheduleUrl',
     captureLabel: 'Capture URL',
     captureType: 'url',
     screenshot: 'images/schedule-example.png'
   },
   CAPTURE_CLASS_NAME: {
-    title: 'Step 7 - Your Class',
+    title: 'Step 6 - Your Class',
     instruction: 'On the same Class Schedule page, click "Capture Class" below, then click directly on the name of the class you want to book.',
     captureKey: 'classSelector',
     captureLabel: 'Capture Class',
     captureType: 'click'
   },
   CAPTURE_TIMESLOT: {
-    title: 'Step 8 - Class Time',
+    title: 'Step 7 - Class Time',
     instruction: 'The clicking is all done! We just need a few more details to make your bookings automatic.\n\nEnter the exact time your class starts.',
     captureKey: 'timeslot',
     captureType: 'typed'
   },
   CAPTURE_PARTICIPANTS: {
-    title: 'Step 9 - Who\'s Booking',
+    title: 'Step 8 - Who\'s Booking',
     instruction: 'Enter the first names of everyone to book for, one per line, up to 7 people.\n\nInclude YOUR OWN name if you want to book for yourself — put it on the first line. Leave your name out if you only want to book for others.',
     captureKey: 'participants',
     captureType: 'typed'
   },
-    CAPTURE_SPOT_PREFERENCES: {
-  title: 'Step 10 - Preferred Spots (optional)',
-  instruction: 'Some classes (yoga, cycle, barre) let you choose your spot. Enter a preferred spot number for any participant who wants a specific one — same order as the names from Step 9. Leave blank to take whatever the site auto-assigns.\n\nIf your class doesn\'t use assigned seating (most classes), just leave everything blank and click Next — the macro will skip this step automatically.',
-  captureKey: 'spotPreferences',
-  captureType: 'typed'
-},
+  CAPTURE_SPOT_PREFERENCES: {
+    title: 'COMING SOON!!! THIS FEATURE IS NOT YET AVAILABLE - Step 9 - Preferred Spots (optional)',
+    instruction: 'Some classes (yoga, cycle, barre) let you choose your spot. Enter a preferred seat number for any participant who wants a specific one — same order as the names from Step 8. Leave blank to take whatever the site auto-assigns.\n\nIf your class doesn\'t use assigned seating (most classes), just leave everything blank and click Next — the macro will skip this step automatically. If your preferred seat is already taken, then macro will auto-assign you seat(s), but you can always change those by clicking "edit spots" in your reservation.',
+    captureKey: 'spotPreferences',
+    captureType: 'typed'
+  },
   SET_SCHEDULE: {
-    title: 'Step 11 - Booking Schedule',
+    title: 'Step 10 - Booking Schedule',
     instruction: 'How far in advance should the macro book, and what time should it run?',
     captureKey: 'schedule',
     captureType: 'typed'
   },
-
-  EXPORT: {
-    title: 'All Done!',
-    instruction: 'Your macro is ready. Click "Download Macro" to get your BookingTemplate.json file, then import it into UIVision and hit Play.',
-    captureKey: null,
-    captureType: null
-  }
+EXPORT: {
+  title: 'Step 11 - Name & Download',
+  instruction: 'Give this booking a unique name (e.g. "Pickleball_Wednesday" or "Yoga_Friday"). Then click Export to download your 4 automation files.',
+  captureKey: null,
+  captureType: null
+}
 };
 
 const URL_ARMED_INSTRUCTIONS = {
-  CAPTURE_LOGIN_URL: 'Now click anywhere on the login page to capture its URL...',
   CAPTURE_SCHEDULE_URL: 'Now click anywhere on the Class Schedule page to capture its URL...'
 };
 
@@ -122,7 +111,7 @@ const CLICK_ARMED_INSTRUCTIONS = {
 // --- Macro Template -----------------------------------------------------------
 const MACRO_TEMPLATE = {
   "Name": "BookingTemplate",
-  "CreationDate": "2026-5-25",
+  "CreationDate": "2026-5-27",
   "Commands": [
     {
       "Command": "open",
@@ -622,7 +611,7 @@ const MACRO_TEMPLATE = {
       "Value": "reserveClicked",
       "Description": "Click the VISIBLE reserve button (site renders a hidden mobile duplicate)"
     },
-{
+    {
       "Command": "comment",
       "Target": "POST-RESERVE — unified flow handler (seat-map OR no-seat-map)",
       "Value": "",
@@ -660,21 +649,117 @@ const MACRO_TEMPLATE = {
     },
     {
       "Command": "comment",
-      "Target": "Flow A — wait until spotSelected count matches participants",
+      "Target": "Flow A — APPLY PREFERRED SPOTS",
       "Value": "",
       "Description": ""
     },
     {
-      "Command": "executeScript",
-      "Target": "var sel=Array.from(document.querySelectorAll('[data-testid=\"spotSelected\"]')).filter(function(e){return e.offsetParent!==null;}).length; var need=parseInt('${participantCount}')||1; return sel>=need ? 'READY' : 'WAIT';",
-      "Value": "spotsReady",
-      "Description": "READY when at least N spots are auto-assigned (N = checked participants)."
+      "Command": "executeScript_Sandbox",
+      "Target": "var btns=Array.from(document.querySelectorAll('button')).filter(function(b){return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); var spots=document.querySelectorAll('[data-testid=\"spotAvailable\"]'); return (btns.length>0 && spots.length>0) ? 'READY' : 'NOT_READY';",
+      "Value": "seatMapReady",
+      "Description": "Returns READY when Edit Spot buttons and spotAvailable nodes are both present."
     },
     {
-      "Command": "while",
-      "Target": "${spotsReady} != 'READY'",
+      "Command": "gotoIf_v2",
+      "Target": "${seatMapReady} == 'READY'",
+      "Value": "spotsReadyDone",
+      "Description": "Skip wait if already ready."
+    },
+    {
+      "Command": "pause",
+      "Target": "1500",
       "Value": "",
-      "Description": "Block until every participant has a spot."
+      "Description": "Give the seat map a moment to load."
+    },
+    {
+      "Command": "executeScript_Sandbox",
+      "Target": "var btns=Array.from(document.querySelectorAll('button')).filter(function(b){return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); var spots=document.querySelectorAll('[data-testid=\"spotAvailable\"]'); return (btns.length>0 && spots.length>0) ? 'READY' : 'NOT_READY';",
+      "Value": "seatMapReady",
+      "Description": "Re-check readiness."
+    },
+    {
+      "Command": "label",
+      "Target": "spotsReadyDone",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "executeScript_Sandbox",
+      "Target": "var names=JSON.parse('##participantsJson##'); var prefs=JSON.parse('##spotPrefsJson##'); window.__lt={names:names,prefs:prefs,results:[]}; return 'PARSED:'+names.length;",
+      "Value": "parseResult",
+      "Description": "Stash names/prefs on window.__lt for subsequent per-participant scripts."
+    },
+    {
+      "Command": "comment",
+      "Target": "PRE-FLIGHT — if any preferred spot is unavailable, revert: keep auto-assigned defaults and skip the per-participant Edit Spot loop entirely.",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "executeScript_Sandbox",
+      "Target": "var prefs=window.__lt.prefs||[]; var names=window.__lt.names||[]; var avail=Array.from(document.querySelectorAll('[data-testid=\"spotAvailable\"]')).map(function(s){return (s.textContent||'').trim();}); var sel=Array.from(document.querySelectorAll('[data-testid=\"spotSelected\"]')); var defaults=sel.map(function(e){ var t=e.getAttribute('data-original-title')||e.getAttribute('title')||''; var m=t.match(/^(.+?)\\s*\\(Spot\\s*(\\d+)\\)/i); return m?(m[1].trim()+'=Spot'+m[2]):'?'; }).join(', '); var missing=[]; for(var i=0;i<names.length;i++){ if(!names[i]||!prefs[i]) continue; if(avail.indexOf(String(prefs[i]))===-1){ missing.push(names[i]+':'+prefs[i]); } } if(missing.length>0){ window.__lt.revertToDefaults=true; window.__lt.defaults=defaults; window.__lt.missing=missing.join(','); return 'REVERT'; } window.__lt.revertToDefaults=false; window.__lt.defaults=defaults; return 'PROCEED';",
+      "Value": "spotCheck",
+      "Description": "If any preferred spot isn't in spotAvailable, set revertToDefaults=true and record the site's auto-assigned defaults so the verify block can report them."
+    },
+    {
+      "Command": "gotoIf_v2",
+      "Target": "${spotCheck} == 'REVERT'",
+      "Value": "spotsDone",
+      "Description": "One or more preferred spots are taken — skip the per-participant loop entirely and let the auto-assigned defaults stand."
+    },
+    {
+      "Command": "comment",
+      "Target": "Participant 1",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "executeScript_Sandbox",
+      "Target": "var i=0; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var btn=Array.from(document.querySelectorAll('button')).find(function(b){ return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null && new RegExp('\\\\b'+n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&')+'\\\\b.*assigned spot','i').test((b.parentElement&&b.parentElement.textContent)||''); }); if(!btn){ return 'NO_EDIT'; } btn.click(); return 'CLICKED';",
+      "Value": "editClick1",
+      "Description": "Find and click Edit Spot for participant."
+    },
+    {
+      "Command": "pause",
+      "Target": "500",
+      "Value": "",
+      "Description": "Wait for edit mode to engage."
+    },
+    {
+      "Command": "gotoIf_v2",
+      "Target": "${editClick1} != 'CLICKED'",
+      "Value": "skipSpot1",
+      "Description": ""
+    },
+    {
+      "Command": "executeScript_Sandbox",
+      "Target": "var i=0; var p=window.__lt.prefs[i]; var n=window.__lt.names[i]; var target=Array.from(document.querySelectorAll('[data-testid=\"spotAvailable\"]')).find(function(s){return (s.textContent||'').trim()===String(p) && s.getBoundingClientRect().width>0;}); if(!target){ var cancel=Array.from(document.querySelectorAll('button')).find(function(b){return /^cancel$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); if(cancel) cancel.click(); window.__lt.results.push(n+':SPOT_'+p+'_UNAVAILABLE'); return 'UNAVAILABLE'; } var r=target.getBoundingClientRect(); ['mousedown','mouseup','click'].forEach(function(t){ target.dispatchEvent(new MouseEvent(t,{bubbles:true,cancelable:true,view:window,clientX:r.left+r.width/2,clientY:r.top+r.height/2,button:0})); }); window.__lt.results.push(n+':SPOT_'+p); return 'OK';",
+      "Value": "spotClick1",
+      "Description": "Click preferred spot for participant; cancel edit mode if spot taken."
+    },
+    {
+      "Command": "pause",
+      "Target": "700",
+      "Value": "",
+      "Description": "Wait for Vue to commit the selection."
+    },
+    {
+      "Command": "label",
+      "Target": "skipSpot1",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "comment",
+      "Target": "Participant 2",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "executeScript_Sandbox",
+      "Target": "var i=1; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var btn=Array.from(document.querySelectorAll('button')).find(function(b){ return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null && new RegExp('\\\\b'+n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&')+'\\\\b.*assigned spot','i').test((b.parentElement&&b.parentElement.textContent)||''); }); if(!btn){ return 'NO_EDIT'; } btn.click(); return 'CLICKED';",
+      "Value": "editClick2",
+      "Description": ""
     },
     {
       "Command": "pause",
@@ -683,52 +768,262 @@ const MACRO_TEMPLATE = {
       "Description": ""
     },
     {
-      "Command": "executeScript",
-      "Target": "var sel=Array.from(document.querySelectorAll('[data-testid=\"spotSelected\"]')).filter(function(e){return e.offsetParent!==null;}).length; var need=parseInt('${participantCount}')||1; return sel>=need ? 'READY' : 'WAIT';",
-      "Value": "spotsReady",
-      "Description": "Re-check spot-assignment state."
+      "Command": "gotoIf_v2",
+      "Target": "${editClick2} != 'CLICKED'",
+      "Value": "skipSpot2",
+      "Description": ""
     },
     {
-      "Command": "end",
-      "Target": "",
-      "Value": "",
-      "Description": "End spotsReady while loop"
+      "Command": "executeScript_Sandbox",
+      "Target": "var i=1; var p=window.__lt.prefs[i]; var n=window.__lt.names[i]; var target=Array.from(document.querySelectorAll('[data-testid=\"spotAvailable\"]')).find(function(s){return (s.textContent||'').trim()===String(p) && s.getBoundingClientRect().width>0;}); if(!target){ var cancel=Array.from(document.querySelectorAll('button')).find(function(b){return /^cancel$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); if(cancel) cancel.click(); window.__lt.results.push(n+':SPOT_'+p+'_UNAVAILABLE'); return 'UNAVAILABLE'; } var r=target.getBoundingClientRect(); ['mousedown','mouseup','click'].forEach(function(t){ target.dispatchEvent(new MouseEvent(t,{bubbles:true,cancelable:true,view:window,clientX:r.left+r.width/2,clientY:r.top+r.height/2,button:0})); }); window.__lt.results.push(n+':SPOT_'+p); return 'OK';",
+      "Value": "spotClick2",
+      "Description": ""
     },
     {
       "Command": "pause",
-      "Target": "1000",
+      "Target": "700",
       "Value": "",
-      "Description": "Brief settle after spots assigned, before clicking Finish."
+      "Description": ""
     },
     {
-  "Command": "comment",
-  "Target": "APPLY PREFERRED SPOTS — for each participant with a preference, override the auto-assigned spot",
-  "Value": "",
-  "Description": ""
-},
-{
-  "Command": "executeScript",
-  "Target": "const prefs=[##spotPref0Json##,##spotPref1Json##,##spotPref2Json##,##spotPref3Json##,##spotPref4Json##,##spotPref5Json##,##spotPref6Json##]; const names=[##participant0Json##,##participant1Json##,##participant2Json##,##participant3Json##,##participant4Json##,##participant5Json##,##participant6Json##]; const results=[]; for(let i=0;i<names.length;i++){ const name=names[i], pref=prefs[i]; if(!name||!pref) continue; const editBtns=Array.from(document.querySelectorAll('button')).filter(b=>/edit spot/i.test(b.innerText||'')); const editBtn=editBtns.find(b=>new RegExp(name+'.*assigned spot','i').test(b.parentElement?.innerText||'')); if(!editBtn){ results.push(name+':NO_EDIT'); continue; } editBtn.click(); await new Promise(r=>setTimeout(r,300)); const target=Array.from(document.querySelectorAll('[data-testid=\"spotAvailable\"]')).find(s=>s.textContent.trim()===String(pref)); if(!target){ results.push(name+':SPOT_'+pref+'_UNAVAILABLE'); continue; } const rect=target.getBoundingClientRect(); ['mousedown','mouseup','click'].forEach(t=>target.dispatchEvent(new MouseEvent(t,{bubbles:true,cancelable:true,view:window,clientX:rect.left+rect.width/2,clientY:rect.top+rect.height/2,button:0}))); await new Promise(r=>setTimeout(r,500)); results.push(name+':SPOT_'+pref); } return results.join('; ')||'NO_PREFERENCES';",
-  "Value": "spotPreferenceResults",
-  "Description": "Iterate through participants; for each with a non-empty preference, click Edit Spot then click the preferred spot's SVG element. Falls back gracefully if the spot is taken."
-},
-{
-  "Command": "echo",
-  "Target": "Spot preferences applied: ${spotPreferenceResults}",
-  "Value": "",
-  "Description": "Logs which participants got their preferred spots and which fell back."
-},
-{
-  "Command": "pause",
-  "Target": "1000",
-  "Value": "",
-  "Description": "Settle after all spot swaps before Finish."
-},
+      "Command": "label",
+      "Target": "skipSpot2",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "comment",
+      "Target": "Participant 3",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "executeScript_Sandbox",
+      "Target": "var i=2; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var btn=Array.from(document.querySelectorAll('button')).find(function(b){ return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null && new RegExp('\\\\b'+n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&')+'\\\\b.*assigned spot','i').test((b.parentElement&&b.parentElement.textContent)||''); }); if(!btn){ return 'NO_EDIT'; } btn.click(); return 'CLICKED';",
+      "Value": "editClick3",
+      "Description": ""
+    },
+    {
+      "Command": "pause",
+      "Target": "500",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "gotoIf_v2",
+      "Target": "${editClick3} != 'CLICKED'",
+      "Value": "skipSpot3",
+      "Description": ""
+    },
+    {
+      "Command": "executeScript_Sandbox",
+      "Target": "var i=2; var p=window.__lt.prefs[i]; var n=window.__lt.names[i]; var target=Array.from(document.querySelectorAll('[data-testid=\"spotAvailable\"]')).find(function(s){return (s.textContent||'').trim()===String(p) && s.getBoundingClientRect().width>0;}); if(!target){ var cancel=Array.from(document.querySelectorAll('button')).find(function(b){return /^cancel$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); if(cancel) cancel.click(); window.__lt.results.push(n+':SPOT_'+p+'_UNAVAILABLE'); return 'UNAVAILABLE'; } var r=target.getBoundingClientRect(); ['mousedown','mouseup','click'].forEach(function(t){ target.dispatchEvent(new MouseEvent(t,{bubbles:true,cancelable:true,view:window,clientX:r.left+r.width/2,clientY:r.top+r.height/2,button:0})); }); window.__lt.results.push(n+':SPOT_'+p); return 'OK';",
+      "Value": "spotClick3",
+      "Description": ""
+    },
+    {
+      "Command": "pause",
+      "Target": "700",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "label",
+      "Target": "skipSpot3",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "comment",
+      "Target": "Participant 4",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "executeScript_Sandbox",
+      "Target": "var i=3; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var btn=Array.from(document.querySelectorAll('button')).find(function(b){ return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null && new RegExp('\\\\b'+n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&')+'\\\\b.*assigned spot','i').test((b.parentElement&&b.parentElement.textContent)||''); }); if(!btn){ return 'NO_EDIT'; } btn.click(); return 'CLICKED';",
+      "Value": "editClick4",
+      "Description": ""
+    },
+    {
+      "Command": "pause",
+      "Target": "500",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "gotoIf_v2",
+      "Target": "${editClick4} != 'CLICKED'",
+      "Value": "skipSpot4",
+      "Description": ""
+    },
+    {
+      "Command": "executeScript_Sandbox",
+      "Target": "var i=3; var p=window.__lt.prefs[i]; var n=window.__lt.names[i]; var target=Array.from(document.querySelectorAll('[data-testid=\"spotAvailable\"]')).find(function(s){return (s.textContent||'').trim()===String(p) && s.getBoundingClientRect().width>0;}); if(!target){ var cancel=Array.from(document.querySelectorAll('button')).find(function(b){return /^cancel$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); if(cancel) cancel.click(); window.__lt.results.push(n+':SPOT_'+p+'_UNAVAILABLE'); return 'UNAVAILABLE'; } var r=target.getBoundingClientRect(); ['mousedown','mouseup','click'].forEach(function(t){ target.dispatchEvent(new MouseEvent(t,{bubbles:true,cancelable:true,view:window,clientX:r.left+r.width/2,clientY:r.top+r.height/2,button:0})); }); window.__lt.results.push(n+':SPOT_'+p); return 'OK';",
+      "Value": "spotClick4",
+      "Description": ""
+    },
+    {
+      "Command": "pause",
+      "Target": "700",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "label",
+      "Target": "skipSpot4",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "comment",
+      "Target": "Participant 5",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "executeScript_Sandbox",
+      "Target": "var i=4; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var btn=Array.from(document.querySelectorAll('button')).find(function(b){ return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null && new RegExp('\\\\b'+n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&')+'\\\\b.*assigned spot','i').test((b.parentElement&&b.parentElement.textContent)||''); }); if(!btn){ return 'NO_EDIT'; } btn.click(); return 'CLICKED';",
+      "Value": "editClick5",
+      "Description": ""
+    },
+    {
+      "Command": "pause",
+      "Target": "500",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "gotoIf_v2",
+      "Target": "${editClick5} != 'CLICKED'",
+      "Value": "skipSpot5",
+      "Description": ""
+    },
+    {
+      "Command": "executeScript_Sandbox",
+      "Target": "var i=4; var p=window.__lt.prefs[i]; var n=window.__lt.names[i]; var target=Array.from(document.querySelectorAll('[data-testid=\"spotAvailable\"]')).find(function(s){return (s.textContent||'').trim()===String(p) && s.getBoundingClientRect().width>0;}); if(!target){ var cancel=Array.from(document.querySelectorAll('button')).find(function(b){return /^cancel$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); if(cancel) cancel.click(); window.__lt.results.push(n+':SPOT_'+p+'_UNAVAILABLE'); return 'UNAVAILABLE'; } var r=target.getBoundingClientRect(); ['mousedown','mouseup','click'].forEach(function(t){ target.dispatchEvent(new MouseEvent(t,{bubbles:true,cancelable:true,view:window,clientX:r.left+r.width/2,clientY:r.top+r.height/2,button:0})); }); window.__lt.results.push(n+':SPOT_'+p); return 'OK';",
+      "Value": "spotClick5",
+      "Description": ""
+    },
+    {
+      "Command": "pause",
+      "Target": "700",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "label",
+      "Target": "skipSpot5",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "comment",
+      "Target": "Participant 6",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "executeScript_Sandbox",
+      "Target": "var i=5; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var btn=Array.from(document.querySelectorAll('button')).find(function(b){ return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null && new RegExp('\\\\b'+n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&')+'\\\\b.*assigned spot','i').test((b.parentElement&&b.parentElement.textContent)||''); }); if(!btn){ return 'NO_EDIT'; } btn.click(); return 'CLICKED';",
+      "Value": "editClick6",
+      "Description": ""
+    },
+    {
+      "Command": "pause",
+      "Target": "500",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "gotoIf_v2",
+      "Target": "${editClick6} != 'CLICKED'",
+      "Value": "skipSpot6",
+      "Description": ""
+    },
+    {
+      "Command": "executeScript_Sandbox",
+      "Target": "var i=5; var p=window.__lt.prefs[i]; var n=window.__lt.names[i]; var target=Array.from(document.querySelectorAll('[data-testid=\"spotAvailable\"]')).find(function(s){return (s.textContent||'').trim()===String(p) && s.getBoundingClientRect().width>0;}); if(!target){ var cancel=Array.from(document.querySelectorAll('button')).find(function(b){return /^cancel$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); if(cancel) cancel.click(); window.__lt.results.push(n+':SPOT_'+p+'_UNAVAILABLE'); return 'UNAVAILABLE'; } var r=target.getBoundingClientRect(); ['mousedown','mouseup','click'].forEach(function(t){ target.dispatchEvent(new MouseEvent(t,{bubbles:true,cancelable:true,view:window,clientX:r.left+r.width/2,clientY:r.top+r.height/2,button:0})); }); window.__lt.results.push(n+':SPOT_'+p); return 'OK';",
+      "Value": "spotClick6",
+      "Description": ""
+    },
+    {
+      "Command": "pause",
+      "Target": "700",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "label",
+      "Target": "skipSpot6",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "comment",
+      "Target": "Participant 7",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "executeScript_Sandbox",
+      "Target": "var i=6; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var btn=Array.from(document.querySelectorAll('button')).find(function(b){ return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null && new RegExp('\\\\b'+n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&')+'\\\\b.*assigned spot','i').test((b.parentElement&&b.parentElement.textContent)||''); }); if(!btn){ return 'NO_EDIT'; } btn.click(); return 'CLICKED';",
+      "Value": "editClick7",
+      "Description": ""
+    },
+    {
+      "Command": "pause",
+      "Target": "500",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "gotoIf_v2",
+      "Target": "${editClick7} != 'CLICKED'",
+      "Value": "skipSpot7",
+      "Description": ""
+    },
+    {
+      "Command": "executeScript_Sandbox",
+      "Target": "var i=6; var p=window.__lt.prefs[i]; var n=window.__lt.names[i]; var target=Array.from(document.querySelectorAll('[data-testid=\"spotAvailable\"]')).find(function(s){return (s.textContent||'').trim()===String(p) && s.getBoundingClientRect().width>0;}); if(!target){ var cancel=Array.from(document.querySelectorAll('button')).find(function(b){return /^cancel$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); if(cancel) cancel.click(); window.__lt.results.push(n+':SPOT_'+p+'_UNAVAILABLE'); return 'UNAVAILABLE'; } var r=target.getBoundingClientRect(); ['mousedown','mouseup','click'].forEach(function(t){ target.dispatchEvent(new MouseEvent(t,{bubbles:true,cancelable:true,view:window,clientX:r.left+r.width/2,clientY:r.top+r.height/2,button:0})); }); window.__lt.results.push(n+':SPOT_'+p); return 'OK';",
+      "Value": "spotClick7",
+      "Description": ""
+    },
+    {
+      "Command": "pause",
+      "Target": "700",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "label",
+      "Target": "skipSpot7",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "label",
+      "Target": "spotsDone",
+      "Value": "",
+      "Description": "Jump target for the pre-flight revert path."
+    },
+  {
+        "Command": "executeScript_Sandbox",
+        "Target": "var sel=Array.from(document.querySelectorAll('[data-testid=\"spotSelected\"]')); var assigns=sel.map(function(e){ var t=e.getAttribute('data-original-title')||e.getAttribute('title')||''; var m=t.match(/^(.+?)\\s*\\(Spot\\s*(\\d+)\\)/i); return m?{name:m[1].trim(),spot:m[2]}:null; }).filter(Boolean); var prefs=window.__lt.prefs||[], names=window.__lt.names||[]; if(window.__lt.revertToDefaults){ var current=assigns.map(function(a){return a.name+'=Spot'+a.spot;}).join(', '); return 'REVERTED_TO_DEFAULTS: preferred unavailable=['+(window.__lt.missing||'')+'] | current assignments=['+current+']'; } var report=[]; for(var i=0;i<names.length;i++){ if(!names[i]||!prefs[i]) continue; var a=assigns.find(function(x){return x.name.toLowerCase()===names[i].toLowerCase();}); if(!a){ report.push(names[i]+':NOT_ASSIGNED'); } else if(a.spot===String(prefs[i])){ report.push(names[i]+':OK_'+a.spot); } else { report.push(names[i]+':GOT_'+a.spot+'_WANTED_'+prefs[i]); } } var log=(window.__lt.results||[]).join('; '); return 'APPLIED_PREFERENCES: '+report.join('; ')+' || LOG: '+log;",
+        "Value": "verifyResult",
+        "Description": "If reverted, reports the auto-assigned spots. Otherwise diffs current assignments against preferences."
+      },
+    {
+      "Command": "echo",
+      "Target": "Spot assignment result: ${verifyResult}",
+      "Value": "",
+      "Description": ""
+    },
     {
       "Command": "end",
       "Target": "",
       "Value": "",
-      "Description": "End SEAT_MAP if block — Flow B falls through directly to Finish."
+      "Description": "End SEAT_MAP if block — Flow B falls through directly to Finish"
     },
     {
       "Command": "comment",
@@ -850,8 +1145,9 @@ function render() {
 
   document.getElementById('step-title').textContent = meta.title;
   document.getElementById('step-instruction').textContent = meta.instruction;
-  document.getElementById('step-counter').textContent =
-    `Step ${state.currentStep + 1} of ${STEPS.length}`;
+
+  document.getElementById('step-counter').textContent = '';
+
   document.getElementById('progress-bar').style.width =
     `${((state.currentStep + 1) / STEPS.length) * 100}%`;
 
@@ -874,7 +1170,28 @@ function render() {
 
   const inputArea = document.getElementById('input-area');
   inputArea.innerHTML = '';
-  if (meta.captureType === 'typed') {
+
+  if (stepName === 'EXPORT') {
+    const defaultName = state.config.macroName || 'BookingTemplate';
+    inputArea.innerHTML = `
+      <div class="field-row">
+        <label>Macro name (no spaces — use underscores)</label>
+        <input type="text" id="t-macroname"
+          placeholder="e.g. Pickleball_Wednesday"
+          value="${defaultName}">
+        <small style="color:#888; font-size:11px; margin-top:4px; display:block;">
+          Each class you automate needs a unique name.
+          This becomes the filename and the Windows task name.
+        </small>
+      </div>
+      <p style="margin-top:12px;">Clicking <strong>Export</strong> will download 4 files:</p>
+      <ul style="font-size:13px; line-height:1.8; margin:0 0 0 16px;">
+        <li><strong>${defaultName}.json</strong> — your UIVision macro</li>
+        <li><strong>RunBooking.bat</strong> — runs the macro instantly</li>
+        <li><strong>RegisterTask.bat</strong> — sets up weekly scheduling</li>
+        <li><strong>README_BOOKING.txt</strong> — setup instructions</li>
+      </ul>`;
+  } else if (meta.captureType === 'typed') {
     inputArea.innerHTML = buildTypedInput(stepName);
     loadTypedValues(stepName);
   }
@@ -899,7 +1216,7 @@ function render() {
   const isExport = stepName === 'EXPORT';
   document.getElementById('btn-export').style.display = isExport ? 'block' : 'none';
   document.getElementById('btn-restart').style.display = isExport ? 'block' : 'none';
-  document.getElementById('btn-next').style.display = isExport ? 'none' : 'block';
+  document.getElementById('btn-next').style.display    = isExport ? 'none'  : 'block';
   document.getElementById('btn-back').style.display =
     state.currentStep > 0 ? 'block' : 'none';
 }
@@ -907,7 +1224,6 @@ function render() {
 // --- Typed Inputs -------------------------------------------------------------
 
 function buildTypedInput(stepName) {
-  
   if (stepName === 'CAPTURE_TIMESLOT') {
     return `
       <div class="field-row">
@@ -927,7 +1243,8 @@ function buildTypedInput(stepName) {
         </select>
       </div>`;
   }
-    if (stepName === 'CAPTURE_CLUB') {
+
+  if (stepName === 'CAPTURE_CLUB') {
     const regionOrder = ['Canada','USA-Northeast','USA-South','USA-Midwest','USA-West'];
     let options = '<option value="">— select your club —</option>';
     for (const region of regionOrder) {
@@ -944,6 +1261,7 @@ function buildTypedInput(stepName) {
         <select id="t-club">${options}</select>
       </div>`;
   }
+
   if (stepName === 'CAPTURE_PARTICIPANTS') {
     return `
       <div class="field-row">
@@ -952,22 +1270,25 @@ function buildTypedInput(stepName) {
           placeholder="Ben&#10;Rejosh"></textarea>
       </div>`;
   }
+
   if (stepName === 'CAPTURE_SPOT_PREFERENCES') {
-  const names = state.config.participants || [];
-  if (names.length === 0) {
-    return `<div class="field-row"><p style="color:#888">No participants captured yet. Go back to Step 9 first.</p></div>`;
+    const names = state.config.participants || [];
+    if (names.length === 0) {
+      return `<div class="field-row"><p style="color:#888">No participants captured yet. Go back to Step 8 first.</p></div>`;
+    }
+    let rows = '';
+    for (let i = 0; i < names.length; i++) {
+      rows += `
+        <div class="field-row">
+          <label>${escapeHtml(names[i])}</label>
+          <input type="number" id="t-spot-${i}" min="1" max="99" placeholder="no preference">
+        </div>`;
+    }
+    return rows;
   }
-  let rows = '';
-  for (let i = 0; i < names.length; i++) {
-    rows += `
-      <div class="field-row">
-        <label>${escapeHtml(names[i])}</label>
-        <input type="number" id="t-spot-${i}" min="1" max="99" placeholder="no preference">
-      </div>`;
-  }
-  return rows;
-}
+
   if (stepName === 'SET_SCHEDULE') {
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD for min attribute
     return `
       <div class="field-row">
         <label>Days ahead to book</label>
@@ -976,6 +1297,16 @@ function buildTypedInput(stepName) {
       <div class="field-row">
         <label>Time to run the macro (24hr format, e.g. 09:00)</label>
         <input type="text" id="t-runtime" placeholder="09:00">
+      </div>
+      <div class="field-row">
+        <label>Date of the class you want to book</label>
+        <input type="date" id="t-classdate"
+          min="${today}"
+          style="width:100%; padding:6px; font-size:14px; cursor:pointer; box-sizing:border-box;">
+        <small style="color:#888; font-size:11px; margin-top:4px; display:block;">
+          Click the calendar icon on the right to pick a date.
+          The task will be scheduled ${'{daysAhead}'} days before this date.
+        </small>
       </div>
       <div class="field-row">
         <label>Your timezone</label>
@@ -1003,11 +1334,12 @@ function buildTypedInput(stepName) {
         <input type="password" id="t-password" placeholder="********" autocomplete="current-password">
       </div>`;
   }
+
   return '';
 }
 
 function loadTypedValues(stepName) {
-    if (stepName === 'CAPTURE_CLUB' && state.config.club) {
+  if (stepName === 'CAPTURE_CLUB' && state.config.club) {
     document.getElementById('t-club').value = state.config.club;
   }
   if (stepName === 'CAPTURE_TIMESLOT' && state.config.timeslot) {
@@ -1021,12 +1353,13 @@ function loadTypedValues(stepName) {
       state.config.participants.join('\n');
   }
   if (stepName === 'CAPTURE_SPOT_PREFERENCES' && state.config.spotPreferences) {
-  const prefs = state.config.spotPreferences;
-  for (let i = 0; i < prefs.length; i++) {
-    const el = document.getElementById(`t-spot-${i}`);
-    if (el) el.value = prefs[i] || '';
+    const prefs = state.config.spotPreferences;
+    for (let i = 0; i < prefs.length; i++) {
+      // FIX: was `document.getElementByIdt-spot-${i})` — missing open paren and quotes
+      const el = document.getElementById(`t-spot-${i}`);
+      if (el) el.value = prefs[i] || '';
+    }
   }
-}
   if (stepName === 'SET_SCHEDULE' && state.config.schedule) {
     const s = state.config.schedule;
     document.getElementById('t-days').value = s.daysAhead || '';
@@ -1040,7 +1373,8 @@ function loadTypedValues(stepName) {
 
 function collectTypedInput() {
   const stepName = STEPS[state.currentStep];
-    if (stepName === 'CAPTURE_CLUB') {
+
+  if (stepName === 'CAPTURE_CLUB') {
     const slug = document.getElementById('t-club').value;
     if (slug && CLUBS_DATA) {
       for (const region of Object.values(CLUBS_DATA)) {
@@ -1067,24 +1401,50 @@ function collectTypedInput() {
       .map(s => s.trim()).filter(Boolean).slice(0, 7);
   }
   if (stepName === 'CAPTURE_SPOT_PREFERENCES') {
-  const prefs = [];
-  const names = state.config.participants || [];
-  for (let i = 0; i < names.length; i++) {
-    const el = document.getElementById(`t-spot-${i}`);
-    prefs.push(el ? el.value.trim() : '');
+    const prefs = [];
+    const names = state.config.participants || [];
+    for (let i = 0; i < names.length; i++) {
+      const el = document.getElementById(`t-spot-${i}`);
+      prefs.push(el ? el.value.trim() : '');
+    }
+    state.config.spotPreferences = prefs;
   }
-  state.config.spotPreferences = prefs;
-}
+
   if (stepName === 'SET_SCHEDULE') {
     state.config.schedule = {
-      daysAhead: document.getElementById('t-days').value,
-      runTime: document.getElementById('t-runtime').value,
-      timezone: document.getElementById('t-timezone').value,
+      daysAhead:      parseInt(document.getElementById('t-days').value)  || 7,
+      runTime:        document.getElementById('t-runtime').value          || '09:00',
+      classDate:      document.getElementById('t-classdate').value        || null,
+      timezone:       document.getElementById('t-timezone').value         || 'America/Toronto',
       runImmediately: document.getElementById('t-runnow').checked,
-      username: document.getElementById('t-username').value,
-      password: document.getElementById('t-password').value
+      username:       document.getElementById('t-username').value         || '',
+      password:       document.getElementById('t-password').value         || ''
     };
   }
+
+if (stepName === 'EXPORT') {
+  const defaultName = state.config.macroName || 'BookingTemplate';
+  return `
+    <div class="field-row">
+      <label>Macro name (no spaces — use underscores)</label>
+      <input type="text" id="t-macroname"
+        placeholder="e.g. Pickleball_Wednesday"
+        value="${defaultName}">
+      <small style="color:#888; font-size:11px; margin-top:4px; display:block;">
+        Each class you automate needs a unique name.
+        This becomes the filename and the Windows task name.
+      </small>
+    </div>
+    <p style="margin-top:12px;">
+      Clicking <strong>Export</strong> will download 4 files:
+    </p>
+    <ul style="font-size:13px; line-height:1.8; margin:0 0 0 16px;">
+      <li><strong>${defaultName}.json</strong> — your UIVision macro</li>
+      <li><strong>RunBooking.bat</strong> — runs the macro instantly</li>
+      <li><strong>RegisterTask.bat</strong> — sets up weekly scheduling</li>
+      <li><strong>README_BOOKING.txt</strong> — setup instructions</li>
+    </ul>`;
+}
 }
 
 // --- Navigation ---------------------------------------------------------------
@@ -1125,14 +1485,6 @@ if (restartBtn) {
 document.getElementById('btn-capture').addEventListener('click', () => {
   const stepName = STEPS[state.currentStep];
   const meta = STEP_META[stepName];
-
-  if (meta.captureType === 'hardcoded') {
-    state.config[meta.captureKey] = 'https://my.lifetime.life/login';
-    saveState();
-    render();
-    return;
-  }
-
   if (meta.captureType === 'url') {
     chrome.tabs.query({ active: true }, (tabs) => {
       const lifetimeTab = tabs.find(t => t.url && t.url.includes('lifetime.life'))
@@ -1193,16 +1545,13 @@ function startCapturePolling() {
     chrome.storage.session.get('lastCapture', (r) => {
       const cap = r.lastCapture;
       if (!cap) return;
-
       const capTime = cap.time || 0;
       if (capTime && capTime <= lastAppliedCaptureTime) {
         chrome.storage.session.remove('lastCapture');
         return;
       }
-
       const applied = applyCapture(cap);
       lastAppliedCaptureTime = capTime || Date.now();
-
       chrome.storage.session.remove('lastCapture');
       if (applied) {
         saveState();
@@ -1211,7 +1560,6 @@ function startCapturePolling() {
     });
   }, 500);
 }
-
 startCapturePolling();
 
 // --- Export -------------------------------------------------------------------
@@ -1222,93 +1570,112 @@ document.getElementById('btn-export').addEventListener('click', () => {
   const s = c.schedule || {};
   const parts = c.participants || [];
 
-  let loginUrl = c.loginUrl || 'https://my.lifetime.life/login';
-  if (loginUrl.includes('auth.lifetime.life')) {
-    loginUrl = 'https://my.lifetime.life/login';
-  }
-
   const tHour   = String(t.hour   || '');
   const tMinRaw = String(t.minute || '0');
   const tMinute = tMinRaw.padStart(2, '0');
+  // FIX: wrap template literal in backticks
   const classTimeStr = (tMinute === '00') ? tHour : `${tHour}:${tMinute}`;
 
   const runParts  = (s.runTime || '09:00').split(':');
   const runHour   = (runParts[0] || '09').padStart(2, '0');
   const runMinute = (runParts[1] || '00').padStart(2, '0');
 
-function jsStr(v) { return JSON.stringify(v || ''); }
+  function jsStr(v) { return JSON.stringify(v || ''); }
 
-// Escapes a JSON-stringified value so it can be safely inlined into another JSON string.
-// jsStr('Ben') => "Ben"   (has unescaped " quotes that will break outer JSON)
-// jsStrEscaped('Ben') => \"Ben\"  (escaped so outer JSON stays valid)
-function jsStrEscaped(v) { return jsStr(v).replace(/"/g, '\\"'); }
+  // For single-value placeholders that are already wrapped in JSON quotes
+  // inside the macro template (e.g. "Target": "##participant0Json##"), we
+  // strip the outer quotes that JSON.stringify added and escape inner quotes.
+  function jsStrEscaped(v) { return jsStr(v).replace(/"/g, '\\"'); }
 
-const spotPrefs = c.spotPreferences || [];
+  // For ARRAY placeholders that get inlined inside an outer JSON string
+  // (e.g. "Target": "var x=JSON.parse('##participantsJson##')") we need:
+  //   1. A valid JSON array string  -> JSON.stringify(arr)
+  //   2. All " inside that string escaped as \" so the outer JSON value stays valid
+  //   3. All \ escaped to \\ first so we don't double-escape
+  //   4. Single quotes left alone (they're inside JSON.parse('...') so they're fine,
+  //      and JSON arrays never contain raw apostrophes as structural chars)
+  // The two .replace() calls below run in this exact order: \ first, then ".
+  function jsonArrayForInlineString(arr) {
+    return JSON.stringify(arr)
+      .replace(/\\/g, '\\\\')   // escape backslashes first
+      .replace(/"/g, '\\"');    // then escape double quotes
+  }
 
-const replacements = {
-  '##clubHomeUrl##':       c.clubHomeUrl || 'https://my.lifetime.life',
-  '##loginUrl##':          loginUrl,
-  '##usernameSelector##':  selectorToString(c.usernameSelector),
-  '##passwordSelector##':  selectorToString(c.passwordSelector),
-  '##submitSelector##':    selectorToString(c.submitSelector),
-  '##scheduleUrl##':       c.scheduleUrl || '',
-  '##className##':         c.className || '',
-  '##classTime##':         classTimeStr,
-  '##timeslotAmPm##':      t.ampm || 'AM',
-  '##classTime_runtime##': classTimeStr,
-  '##daysAhead##':         String(s.daysAhead || '6'),
-  '##runHour##':           runHour,
-  '##runMinute##':         runMinute,
-  '##timezone##':          s.timezone || 'America/Toronto',
-  '##runImmediately##':    s.runImmediately ? 'true' : 'false',
-  '##username##':          s.username || '',
-  '##password##':          s.password || '',
+  const spotPrefs = c.spotPreferences || [];
 
-  '##participant0##':      parts[0] || '',
-  '##participant1##':      parts[1] || '',
-  '##participant2##':      parts[2] || '',
-  '##participant3##':      parts[3] || '',
-  '##participant4##':      parts[4] || '',
-  '##participant5##':      parts[5] || '',
-  '##participant6##':      parts[6] || '',
+  const replacements = {
+    '##clubHomeUrl##':       c.clubHomeUrl || 'https://my.lifetime.life',
+    '##loginUrl##':          'https://my.lifetime.life/login',
+    '##usernameSelector##':  selectorToString(c.usernameSelector),
+    '##passwordSelector##':  selectorToString(c.passwordSelector),
+    '##submitSelector##':    selectorToString(c.submitSelector),
+    '##scheduleUrl##':       c.scheduleUrl || '',
+    '##className##':         c.className || '',
+    '##classTime##':         classTimeStr,
+    '##timeslotAmPm##':      t.ampm || 'AM',
+    '##classTime_runtime##': classTimeStr,
+    '##daysAhead##':         String(s.daysAhead || '6'),
+    '##runHour##':           runHour,
+    '##runMinute##':         runMinute,
+    '##timezone##':          s.timezone || 'America/Toronto',
+    '##runImmediately##':    s.runImmediately ? 'true' : 'false',
+    '##username##':          s.username || '',
+    '##password##':          s.password || '',
 
-  '##participant0Json##':  jsStrEscaped(parts[0]),
-  '##participant1Json##':  jsStrEscaped(parts[1]),
-  '##participant2Json##':  jsStrEscaped(parts[2]),
-  '##participant3Json##':  jsStrEscaped(parts[3]),
-  '##participant4Json##':  jsStrEscaped(parts[4]),
+    '##participant0##':      parts[0] || '',
+    '##participant1##':      parts[1] || '',
+    '##participant2##':      parts[2] || '',
+    '##participant3##':      parts[3] || '',
+    '##participant4##':      parts[4] || '',
+    '##participant5##':      parts[5] || '',
+    '##participant6##':      parts[6] || '',
+
+    '##participant0Json##':  jsStrEscaped(parts[0]),
+    '##participant1Json##':  jsStrEscaped(parts[1]),
+    '##participant2Json##':  jsStrEscaped(parts[2]),
+    '##participant3Json##':  jsStrEscaped(parts[3]),
+    '##participant4Json##':  jsStrEscaped(parts[4]),
   '##participant5Json##':  jsStrEscaped(parts[5]),
-  '##participant6Json##':  jsStrEscaped(parts[6]),
+    '##participant6Json##':  jsStrEscaped(parts[6]),
 
-  '##spotPref0##':         spotPrefs[0] || '',
-  '##spotPref1##':         spotPrefs[1] || '',
-  '##spotPref2##':         spotPrefs[2] || '',
-  '##spotPref3##':         spotPrefs[3] || '',
-  '##spotPref4##':         spotPrefs[4] || '',
-  '##spotPref5##':         spotPrefs[5] || '',
-  '##spotPref6##':         spotPrefs[6] || '',
+    '##spotPref0##':         spotPrefs[0] || '',
+    '##spotPref1##':         spotPrefs[1] || '',
+    '##spotPref2##':         spotPrefs[2] || '',
+    '##spotPref3##':         spotPrefs[3] || '',
+    '##spotPref4##':         spotPrefs[4] || '',
+    '##spotPref5##':         spotPrefs[5] || '',
+    '##spotPref6##':         spotPrefs[6] || '',
 
-  '##spotPref0Json##':     jsStrEscaped(spotPrefs[0]),
-  '##spotPref1Json##':     jsStrEscaped(spotPrefs[1]),
-  '##spotPref2Json##':     jsStrEscaped(spotPrefs[2]),
-  '##spotPref3Json##':     jsStrEscaped(spotPrefs[3]),
-  '##spotPref4Json##':     jsStrEscaped(spotPrefs[4]),
-  '##spotPref5Json##':     jsStrEscaped(spotPrefs[5]),
-  '##spotPref6Json##':     jsStrEscaped(spotPrefs[6])
-};
+    '##spotPref0Json##':     jsStrEscaped(spotPrefs[0]),
+    '##spotPref1Json##':     jsStrEscaped(spotPrefs[1]),
+    '##spotPref2Json##':     jsStrEscaped(spotPrefs[2]),
+    '##spotPref3Json##':     jsStrEscaped(spotPrefs[3]),
+    '##spotPref4Json##':     jsStrEscaped(spotPrefs[4]),
+    '##spotPref5Json##':     jsStrEscaped(spotPrefs[5]),
+    '##spotPref6Json##':     jsStrEscaped(spotPrefs[6]),
 
-let macroStr = JSON.stringify(MACRO_TEMPLATE, null, 2);
-for (const [placeholder, value] of Object.entries(replacements)) {
-  macroStr = macroStr.split(placeholder).join(value);
-}
+    // ===== CRITICAL FIX =====
+    // These two placeholders get inlined INSIDE a JSON string value in the macro,
+    // i.e. "Target": "var names=JSON.parse('##participantsJson##'); ..."
+    // jsonArrayForInlineString() escapes \ then " so the outer JSON stays valid.
+    '##participantsJson##':  jsonArrayForInlineString(parts.slice(0, 7)),
+    '##spotPrefsJson##':     jsonArrayForInlineString(spotPrefs.slice(0, 7).map(p => p || ''))
+  };
 
-const blob = new Blob([macroStr], { type: 'application/json' });
-const url = URL.createObjectURL(blob);
-const a = document.createElement('a');
-a.href = url;
-a.download = 'BookingTemplate.json';
-a.click();
-URL.revokeObjectURL(url);
+  // Build the substituted macro JSON object
+  let macroStr = JSON.stringify(MACRO_TEMPLATE, null, 2);
+  for (const [placeholder, value] of Object.entries(replacements)) {
+    macroStr = macroStr.split(placeholder).join(value);
+  }
+  const macroJson = JSON.parse(macroStr);
+
+  // Read macro name from EXPORT step input, sanitize for filename/task name safety
+  const rawName   = (document.getElementById('t-macroname')?.value || state.config.macroName || 'BookingTemplate').trim();
+  const macroName = rawName.replace(/[^a-zA-Z0-9_\-]/g, '_');
+  state.config.macroName = macroName;
+
+  // exportAll() downloads all 4 files: macro JSON + RunBooking.bat + RegisterTask.bat + README
+  exportAll(state.config, macroJson, macroName);
 });
 
 // --- Helpers ------------------------------------------------------------------
