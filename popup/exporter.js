@@ -14,7 +14,10 @@ function downloadFile(filename, content, mimeType = 'text/plain') {
   const a    = document.createElement('a');
   a.href     = url;
   a.download = filename;
+  a.style.display = 'none';      // ← hide it visually
+  document.body.appendChild(a);  // ← must be in the DOM
   a.click();
+  document.body.removeChild(a);  // ← clean up immediately
   URL.revokeObjectURL(url);
 }
 
@@ -22,32 +25,57 @@ function downloadFile(filename, content, mimeType = 'text/plain') {
  * Master export function — call this from popup.js on the EXPORT step.
  * Generates and downloads all 4 files as a bundle.
  *
- * @param {object} config   - wizard state.config
+ * @param {object} config    - wizard state.config
  * @param {object} macroJson - the fully-substituted BookingTemplate object
  * @param {string} macroName - e.g. "BookingTemplate"
  */
 function exportAll(config, macroJson, macroName = 'BookingTemplate') {
+  if (!config || !macroJson) {
+    console.error('[exportAll] Missing config or macroJson', { config, macroJson });
+    return;
+  }
 
-  // 1. BookingTemplate.json — the UIVision macro
-  downloadFile(
-    `${macroName}.json`,
-    JSON.stringify(macroJson, null, 2),
-    'application/json'
-  );
+  const files = [
+    {
+      name: `${macroName}.json`,
+      content: JSON.stringify(macroJson, null, 2),
+      mime: 'application/json'
+    },
+    {
+      name: 'RunBooking.bat',
+      content: generateRunBookingBat(macroName),
+      mime: 'text/plain'
+    },
+    {
+      name: 'RegisterTask.bat',
+      content: generateRegisterTaskBat(config, macroName),
+      mime: 'text/plain'
+    },
+    {
+      name: 'README_BOOKING.txt',
+      content: generateReadme(config, macroName),
+      mime: 'text/plain'
+    }
+  ];
 
-  // Small delay between downloads so browser doesn't block them
-  setTimeout(() => {
-    // 2. RunBooking.bat
-    downloadFile(`RunBooking.bat`, generateRunBookingBat(macroName));
-  }, 300);
+  // Build ALL anchors + append to DOM while still in the user-gesture context
+  const anchors = files.map(({ name, content, mime }) => {
+    const blob = new Blob([content], { type: mime });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = name;
+    a.style.display = 'none';
+    document.body.appendChild(a); // ← appended HERE, inside the sync call
+    return { a, url };
+  });
 
-  setTimeout(() => {
-    // 3. RegisterTask.bat
-    downloadFile(`RegisterTask.bat`, generateRegisterTaskBat(config, macroName));
-  }, 600);
-
-  setTimeout(() => {
-    // 4. README_BOOKING.txt
-    downloadFile(`README_BOOKING.txt`, generateReadme(config, macroName));
-  }, 900);
+  // Click them with small delays — anchors are already live in the DOM
+  anchors.forEach(({ a, url }, i) => {
+    setTimeout(() => {
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, i * 300);
+  });
 }

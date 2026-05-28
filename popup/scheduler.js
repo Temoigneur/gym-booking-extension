@@ -278,73 +278,168 @@ function generateReadme(config, macroName) {
   const schedDate = calcScheduleDate(daysAhead, classDate);
   const dayOfWeek = getDayOfWeek(classDate);
 
-  return `GYM BOOKING AUTOMATION — SETUP INSTRUCTIONS
+  return `GYM CLASS AUTO-BOOKING — SETUP GUIDE
 ===================================================
 
+What this does:
+  This folder contains the files your Gym Booking Chrome plugin uses
+  to automatically book your gym class every week. You set it up once
+  and it runs on its own from then on. You don't need to be at your
+  computer when it runs.
+
 Files included in this folder:
-  • ${macroName}.json       → Your booking macro (auto-loaded, do not move)
-  • RunBooking.bat          → Runs your booking macro (double-click to test)
-  • RegisterTask.bat        → Configures your PC + schedules the task
-  • README_BOOKING.txt      → This file
+  • ${macroName}.json    → Your booking configuration (do not rename or move)
+  • RunBooking.bat       → Runs the booking right now (great for testing)
+  • RegisterTask.bat     → Schedules the booking to run automatically every week
+  • README_BOOKING.txt   → This file
 
-IMPORTANT: Keep all four files in the same folder at all times.
-           Moving or renaming them will break the automation.
+  IMPORTANT: Keep all four files in the same folder at all times.
+             Moving or renaming any of them will break the automation.
 
-BEFORE YOU START — ONE-TIME MANUAL STEPS
------------------------------------------
-1. Install UIVision from the Chrome Web Store:
-   https://chrome.google.com/webstore/detail/uivision/gcbalfbdmfieckjlnblleoemohcganoc
 
-2. Open UIVision once after installing, then close it.
-   (This creates the storage folders it needs.)
+WHAT YOU NEED
+-------------
+  • A Windows PC (Windows 10 or 11) — this does not work on Mac
+  • Google Chrome installed — not Edge, not Firefox, Chrome specifically
 
-3. Disable screen lock after sleep (IMPORTANT):
-   Settings → Accounts → Sign-in options
-   → "Require sign-in" → set to "Never"
-   (If the screen locks, Chrome cannot complete the booking.)
 
-That's it — RunBooking.bat handles everything else automatically,
-including loading the macro into UIVision every time it runs.
+ONE-TIME SETUP (do this once, takes about 5 minutes)
+-----------------------------------------------------
 
-STEP 1 — Run the setup (do this ONCE)
----------------------------------------
+STEP 1 — Install UIVision in Chrome
+
+  UIVision is the free Chrome extension that does the actual clicking
+  and booking on your behalf. It's on the official Chrome Web Store
+  and your credentials never leave your own computer.
+
+  1. Open Google Chrome
+  2. Go to: https://chrome.google.com/webstore/detail/uivision/gcbalfbdmfieckjlnblleoemohcganoc
+  3. Click "Add to Chrome" then "Add extension" when prompted
+  4. Click the puzzle piece icon in Chrome's top-right corner
+  5. Click UIVision in the list, let it open, then close it again
+
+  You only need to do this once.
+
+
+STEP 2 — Install UIVision XModules
+
+  XModules is a small free companion app that lets UIVision read your
+  booking file from your hard drive. Without it, the booking will open
+  Chrome but nothing will happen.
+
+  1. Go to: https://ui.vision/rpa/x/download
+  2. Click the Windows download link and run the installer
+  3. Click through the installer — accept all defaults
+  4. Once it finishes, open Chrome and click the UIVision icon
+  5. Go to Settings → XModule Status
+  6. You should see green checkmarks next to the modules
+
+  You only need to do this once.
+
+
+STEP 3 — Turn Off Screen Lock
+
+  If your screen locks while the plugin is running, Chrome can't
+  complete the booking. To prevent this:
+
+  1. Open the Start menu and click Settings (the gear icon)
+  2. Go to Accounts → Sign-in options
+  3. Find "Require sign-in" and set it to Never
+
+  Your PC will still sleep normally — this only stops it from
+  locking you out when it wakes up.
+
+
+STEP 4 — Run the Scheduler (one time only)
+
+  This tells Windows to wake your PC and run the booking automatically
+  every week.
+
   1. Right-click RegisterTask.bat
   2. Select "Run as administrator"
-  3. You should see: SUCCESS! Everything is configured and scheduled.
+     (A blue pop-up may ask permission — click Yes)
+  3. A black window will appear and scroll through setup steps
+     — this is normal, don't close it
+  4. Wait until you see:
 
-  The task will run automatically every ${dayOfWeek} at ${runTime24}.
+       SUCCESS! Everything is configured and scheduled.
 
-STEP 2 — Leave your PC on or in Sleep mode
--------------------------------------------
-  First scheduled run:
-    Date : ${schedDate}
-    Time : ${runTime24}
-  Repeats every ${dayOfWeek} at ${runTime24} automatically.
+  5. Press any key to close the window.
 
-  Sleep mode = OK  ✓
-  Hibernate   = Will NOT wake  ✗
-  Shutdown    = Will NOT wake  ✗
+  If you see ERROR instead, you likely need to right-click and choose
+  "Run as administrator" again.
 
-TO TEST RIGHT NOW
------------------
-  Double-click RunBooking.bat — no admin rights needed.
-  It will import the macro and run it immediately.
 
-RUNNING MULTIPLE CLASSES
+YOU'RE ALL SET
+--------------
+  Your booking is now scheduled to run automatically:
+
+    First run : ${schedDate} at ${runTime24}
+    Repeats   : Every ${dayOfWeek} at ${runTime24}
+
+  As long as your PC is on or in sleep mode at that time, the plugin
+  will wake it up, open Chrome, log in to Life Time, and book your spot.
+  You'll get a booking confirmation email from Life Time as proof it worked.
+
+  PC State at booking time:
+    On (screen on or off)  = Will work      ✓
+    Sleep mode             = Will work      ✓  (PC wakes itself up)
+    Hibernate              = Will NOT work  ✗
+    Shut down              = Will NOT work  ✗
+
+  Tip: Leave your PC plugged in and let it sleep normally.
+       Don't shut it down the night before a booking day.
+
+
+TO TEST IT RIGHT NOW
+--------------------
+  1. Double-click RunBooking.bat (no admin rights needed)
+  2. A black window will briefly appear — this is normal
+  3. Chrome will open and the plugin will run
+  4. Don't click anything in Chrome while it's running
+
+  The whole process takes about 60-90 seconds. Check your Life Time
+  app or email for a booking confirmation.
+
+
+BOOKING MULTIPLE CLASSES
 -------------------------
-  Each class has its own folder with its own set of files.
-  Right-click each RegisterTask.bat once to schedule each class.
-  They run independently and do not interfere with each other.
+  Each class has its own folder with its own set of four files.
+  To schedule another class, run the Gym Booking Wizard again,
+  put the new files in a separate folder, and right-click the new
+  RegisterTask.bat once.
+
+  Each class runs independently and won't interfere with the others.
+
 
 TROUBLESHOOTING
 ---------------
-  • "Task could not be registered"  → Right-click → Run as administrator
-  • "Macro file not found"          → Make sure all 4 files are in the same folder
-  • Chrome opens but macro fails    → Re-run the wizard and export fresh files
-  • PC didn't wake from sleep       → Settings → Power → Allow wake timers → Enabled
-  • Wrong schedule?                 → Re-run the wizard and export fresh files
-  • Corporate/work PC issues        → Your IT policy may block automation
+  "Task could not be registered"
+    → Right-click RegisterTask.bat and choose Run as administrator
 
-Generated by Gym Booking Wizard
+  "Macro file not found"
+    → Make sure all 4 files are in the same folder
+
+  Chrome opens but nothing happens
+    → Make sure XModules is installed (Step 2 above)
+    → Then double-click RunBooking.bat to try again
+    → If it keeps failing, re-run the Wizard and export fresh files
+
+  XModule Status shows red in UIVision settings
+    → Re-run the XModules installer from https://ui.vision/rpa/x/download
+
+  PC didn't wake up at booking time
+    → Settings → System → Power & Sleep → Additional power settings
+      → Change plan settings → Change advanced power settings
+      → Sleep → Allow wake timers → set to Enabled
+
+  Booked the wrong class or time
+    → Re-run the Gym Booking Wizard and export a fresh set of files
+
+  You're on a work laptop
+    → Your company's IT policy may block this. Try on a personal PC.
+
+
+Generated by the Gym Booking Wizard
 `;
 }
