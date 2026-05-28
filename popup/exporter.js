@@ -30,10 +30,6 @@ function downloadFile(filename, content, mimeType = 'text/plain') {
  * @param {string} macroName - e.g. "BookingTemplate"
  */
 function exportAll(config, macroJson, macroName = 'BookingTemplate') {
-  if (!config || !macroJson) {
-    console.error('[exportAll] Missing config or macroJson', { config, macroJson });
-    return;
-  }
 
   const files = [
     {
@@ -50,31 +46,23 @@ function exportAll(config, macroJson, macroName = 'BookingTemplate') {
       name: 'RegisterTask.bat',
       content: generateRegisterTaskBat(config, macroName),
       mime: 'text/plain'
-    },
-    {
-      name: 'README_BOOKING.txt',
-      content: generateReadme(config, macroName),
-      mime: 'text/plain'
     }
+    // README removed — instructions live in INSTALL_INSTRUCTIONS.txt
+    // in the plugin root folder, available before the wizard runs
   ];
 
-  // Build ALL anchors + append to DOM while still in the user-gesture context
   const anchors = files.map(({ name, content, mime }) => {
     const blob = new Blob([content], { type: mime });
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement('a');
     a.href     = url;
     a.download = name;
-    a.style.display = 'none';
-    document.body.appendChild(a); // ← appended HERE, inside the sync call
     return { a, url };
   });
 
-  // Click them with small delays — anchors are already live in the DOM
   anchors.forEach(({ a, url }, i) => {
     setTimeout(() => {
       a.click();
-      document.body.removeChild(a);
       URL.revokeObjectURL(url);
     }, i * 300);
   });

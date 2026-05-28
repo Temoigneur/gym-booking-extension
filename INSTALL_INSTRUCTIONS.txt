@@ -1,19 +1,17 @@
-GYM BOOKING WIZARD — INSTALLATION GUIDE
+GYM BOOKING WIZARD — INSTALLATION & SETUP GUIDE
 ===================================================
 
 What this is:
-  A Chrome plugin that walks you through a one-time setup to
-  automatically book your Life Time gym class every week.
-  The whole setup takes about 10 minutes. After that, it runs
-  itself every week without you doing anything.
+  A Chrome plugin that automatically books your Life Time gym class
+  every week. You set it up once and it runs on its own from then on.
+  You don't need to be at your computer when it runs.
 
 How it works:
   1. You install this plugin in Chrome
-  2. You run the Wizard inside the plugin — it asks you to click
-     a few things on the Life Time website so it learns your
-     login, your club, and your class
-  3. At the end, the Wizard downloads 4 files to your computer
-  4. You run a one-time setup on those files and you're done
+  2. You run the Wizard inside the plugin — it learns your login,
+     your club, and your class
+  3. The Wizard downloads files to your computer
+  4. You do a one-time setup (takes about 5 minutes) and you're done
 
 
 WHAT YOU NEED
@@ -22,80 +20,181 @@ WHAT YOU NEED
   • Google Chrome — not Edge, not Firefox, Chrome specifically
 
 
-STEP 1 — Install the Plugin in Chrome
---------------------------------------
-  1. Unzip the folder you received (if you haven't already)
-     and put it somewhere permanent — like your Documents folder.
-     Do not leave it on your Desktop or in Downloads where it
-     might get moved or deleted later.
+═══════════════════════════════════════════════════════════
+PART 1 — INSTALL THE CHROME PLUGIN (if not already done)
+═══════════════════════════════════════════════════════════
 
-  2. Open Google Chrome
+STEP 1 — Load the Plugin in Chrome
+------------------------------------
+  1. Put this folder somewhere permanent — like Documents\\GymBooking.
+     Do not leave it in Downloads where it might get moved or deleted.
 
-  3. In the address bar, type:
+  2. Open Google Chrome and go to:
        chrome://extensions
      and press Enter
 
-  4. In the top-right corner, turn on "Developer mode"
-     (it's a toggle switch)
+  3. In the top-right corner, turn on "Developer mode"
 
-  5. Click the "Load unpacked" button that appears
+  4. Click "Load unpacked" and select the plugin folder
 
-  6. Browse to the folder you unzipped and select it
-
-  7. The Gym Booking plugin icon will appear in your Chrome toolbar
-     (click the puzzle piece icon 🧩 if you don't see it,
-     then pin it by clicking the pin next to Gym Booking)
-
-  That's it — the plugin is installed.
+  5. The Gym Booking icon will appear in your Chrome toolbar
+     (click the puzzle piece 🧩 if you don't see it, then pin it)
 
 
 STEP 2 — Run the Wizard
 ------------------------
-  1. Click the Gym Booking plugin icon in your Chrome toolbar
-     A panel will open on the right side of your screen
+  1. Click the Gym Booking icon in your Chrome toolbar
 
-  2. Keep this panel open the entire time — it stays visible
-     while you browse to the Life Time website
-
-  3. Follow the on-screen steps — the Wizard will ask you to:
+  2. Keep the panel open the entire time — follow the on-screen steps:
        • Select your Life Time club
-       • Click on your username and password fields when you log in
+       • Click your username and password fields when logging in
        • Navigate to your class schedule page
-       • Click on the class you want to book
+       • Click the class you want to book
        • Enter the class time and who you're booking for
        • Set the day and time you want the booking to run
 
-  4. At the end, click Export — the Wizard will download 4 files
-     to your Downloads folder
+  3. Click Export at the end — the Wizard downloads your files
 
 
-STEP 3 — Set Up Your Downloaded Files
---------------------------------------
-  1. Create a new folder somewhere permanent
-     (e.g. Documents\GymBooking\Pickleball_Wednesday)
-
-  2. Move all 4 downloaded files into that folder
-
-  3. Open the README_BOOKING.txt file inside that folder
-     and follow the instructions there
-
-  That README will walk you through installing UIVision,
-  XModules, and scheduling the booking to run automatically.
+  TIPS:
+    • Don't close the plugin panel mid-wizard — click the icon again
+      to reopen it if it closes, your progress is saved
+    • To book multiple classes, run the Wizard again for each one
+    • If something goes wrong, click "Start Over" to reset
 
 
-TIPS
-----
-  • Don't close the plugin panel while going through the Wizard
-    steps — if it closes, just click the icon again to reopen it,
-    your progress is saved
+═══════════════════════════════════════════════════════════
+PART 2 — ONE-TIME SETUP (do this once, ~5 minutes)
+═══════════════════════════════════════════════════════════
 
-  • If you want to book multiple classes, just run the Wizard
-    again for each one — each class gets its own set of files
-    in its own folder
+Files in this folder:
+  • ${macroName}.json       → Your booking configuration (do not rename or move)
+  • RunBooking.bat          → Runs the booking right now (great for testing)
+  • RegisterTask.bat        → Schedules the booking to run automatically every week
+  • INSTALL_INSTRUCTIONS.txt → This file
 
-  • If something goes wrong mid-wizard, click "Start Over" at
-    the end of the wizard — it will clear everything and let
-    you begin again
+  IMPORTANT: Keep all four files in the same folder at all times.
+             Moving or renaming any of them will break the automation.
+
+
+STEP 3 — Install UIVision in Chrome
+-------------------------------------
+  UIVision is the free Chrome extension that does the actual clicking
+  and booking. It's on the official Chrome Web Store and your
+  credentials never leave your own computer.
+
+  1. Open Google Chrome
+  2. Go to: https://chrome.google.com/webstore/detail/uivision/gcbalfbdmfieckjlnblleoemohcganoc
+  3. Click "Add to Chrome" → "Add extension"
+  4. Click the puzzle piece icon, click UIVision to open it, then close it
+
+  You only need to do this once.
+
+
+STEP 4 — Install UIVision XModules
+------------------------------------
+  XModules is a small free companion app that lets UIVision read your
+  booking file from your hard drive. Without it, Chrome will open
+  but nothing will happen.
+
+  1. Go to: https://ui.vision/rpa/x/download
+  2. Click the Windows download link and run the installer
+  3. Accept all defaults and finish the install
+  4. Open Chrome, click the UIVision icon
+  5. Go to Settings → XModule Status
+  6. You should see green checkmarks next to the modules
+
+  You only need to do this once.
+
+
+STEP 5 — Turn Off Screen Lock
+-------------------------------
+  If your screen locks while the plugin is running, Chrome can't
+  complete the booking.
+
+  1. Start menu → Settings (gear icon)
+  2. Accounts → Sign-in options
+  3. Find "Require sign-in" and set it to Never
+
+  Your PC will still sleep normally — this only stops it from
+  locking you out when it wakes up to run the booking.
+
+
+STEP 6 — Schedule the Booking (one time only)
+-----------------------------------------------
+  1. Right-click RegisterTask.bat
+  2. Select "Run as administrator"
+     (A blue pop-up may ask permission — click Yes)
+  3. A black window will scroll through setup steps — don't close it
+  4. Wait until you see:
+
+       SUCCESS! Everything is configured and scheduled.
+
+  5. Press any key to close the window
+
+  If you see ERROR, right-click and choose "Run as administrator" again.
+
+
+═══════════════════════════════════════════════════════════
+YOU'RE ALL SET
+═══════════════════════════════════════════════════════════
+
+  Your booking is now scheduled to run automatically:
+
+    First run : ${schedDate} at ${runTime24}
+    Repeats   : Every ${dayOfWeek} at ${runTime24}
+
+  As long as your PC is on or sleeping at that time, the plugin will
+  wake it up, open Chrome, log in to Life Time, and book your spot.
+  You'll get a booking confirmation email from Life Time as proof.
+
+  PC state at booking time:
+    On (screen on or off)  = Will work      ✓
+    Sleep mode             = Will work      ✓  (PC wakes itself up)
+    Hibernate              = Will NOT work  ✗
+    Shut down              = Will NOT work  ✗
+
+  Tip: Leave your PC plugged in and let it sleep normally.
+       Don't shut it down the night before a booking day.
+
+
+TO TEST IT RIGHT NOW
+--------------------
+  1. Double-click RunBooking.bat (no admin rights needed)
+  2. A black window will briefly appear — this is normal
+  3. Chrome will open and the plugin will run automatically
+  4. Don't click anything in Chrome while it's running
+
+  The whole process takes about 60–90 seconds. Check your Life Time
+  app or email for a booking confirmation.
+
+
+TROUBLESHOOTING
+---------------
+  "Task could not be registered"
+    → Right-click RegisterTask.bat and choose Run as administrator
+
+  "Macro file not found"
+    → Make sure all 4 files are in the same folder
+
+  Chrome opens but nothing happens
+    → Make sure XModules is installed (Step 4 above)
+    → Double-click RunBooking.bat to try again
+    → If it keeps failing, re-run the Wizard and export fresh files
+
+  XModule Status shows red in UIVision settings
+    → Re-run the XModules installer from https://ui.vision/rpa/x/download
+
+  PC didn't wake up at booking time
+    → Settings → System → Power & Sleep → Additional power settings
+      → Change plan settings → Change advanced power settings
+      → Sleep → Allow wake timers → set to Enabled
+
+  Booked the wrong class or time
+    → Re-run the Gym Booking Wizard and export a fresh set of files
+
+  You're on a work laptop
+    → Your company's IT policy may block this. Try on a personal PC.
 
 
 Generated by the Gym Booking Wizard

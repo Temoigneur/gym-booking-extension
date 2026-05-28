@@ -93,7 +93,7 @@ const STEP_META = {
   },
 EXPORT: {
   title: 'Step 11 - Name & Download',
-  instruction: 'Give this booking a unique name (e.g. "Pickleball_Wednesday" or "Yoga_Friday"). Then click Export to download your 4 automation files.',
+  instruction: 'Give this booking a unique name (e.g. "Pickleball_Wednesday" or "Yoga_Friday"). Then click Export to download your 3 automation files.',
   captureKey: null,
   captureType: null
 }
