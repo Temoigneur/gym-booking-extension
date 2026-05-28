@@ -4,7 +4,6 @@ const STEPS = [
   'CAPTURE_USERNAME_FIELD',
   'CAPTURE_PASSWORD_FIELD',
   'CAPTURE_SUBMIT_BUTTON',
-  'CAPTURE_SCHEDULE_URL',
   'CAPTURE_CLASS_NAME',
   'CAPTURE_TIMESLOT',
   'CAPTURE_PARTICIPANTS',
@@ -52,56 +51,46 @@ const STEP_META = {
     captureLabel: 'Capture Button',
     captureType: 'click'
   },
-  CAPTURE_SCHEDULE_URL: {
-    title: 'Step 5 - Class Schedule Page',
-    instruction: 'Click the Log In button on the page to log in to Lifetime, then navigate to the Class Schedule page showing the class you want to book on the date you\'d like.\n\nOnce you can see the class listed on screen, click "Capture URL" below, then click anywhere on the screen, even if a class is highlighted, the wizard will capture the "Class Schedule webpage URL".',
-    captureKey: 'scheduleUrl',
-    captureLabel: 'Capture URL',
-    captureType: 'url',
-    screenshot: 'images/schedule-example.png'
-  },
+
   CAPTURE_CLASS_NAME: {
-    title: 'Step 6 - Your Class',
-    instruction: 'On the same Class Schedule page, click "Capture Class" below, then click directly on the name of the class you want to book.',
+    title: 'Step 5 - Your Class',
+    instruction: 'Click the Log In button to Log in, then navigate to the class schedule/calendar page containing the class you want by clicking "Schedule" => "All Classes" => click the day or week your class is on. Next, simply click "Capture Class" below, then click directly on the name of the class you want to book.',
     captureKey: 'classSelector',
     captureLabel: 'Capture Class',
     captureType: 'click'
   },
   CAPTURE_TIMESLOT: {
-    title: 'Step 7 - Class Time',
+    title: 'Step 6 - Class Time',
     instruction: 'The clicking is all done! We just need a few more details to make your bookings automatic.\n\nEnter the exact time your class starts.',
     captureKey: 'timeslot',
     captureType: 'typed'
   },
   CAPTURE_PARTICIPANTS: {
-    title: 'Step 8 - Who\'s Booking',
+    title: 'Step 7 - Who\'s Booking',
     instruction: 'Enter the first names of everyone to book for, one per line, up to 7 people.\n\nInclude YOUR OWN name if you want to book for yourself — put it on the first line. Leave your name out if you only want to book for others.',
     captureKey: 'participants',
     captureType: 'typed'
   },
   CAPTURE_SPOT_PREFERENCES: {
-    title: 'Step 9 - Preferred Spots (optional)',
+    title: 'Step 8 - Preferred Spots (optional)',
     instruction: 'Some classes (yoga, cycle, barre) let you choose your spot. Enter a preferred seat number for any participant who wants a specific one — same order as the names from Step 8. Leave blank to take whatever the site auto-assigns.\n\nIf your class doesn\'t use assigned seating (most classes), just leave everything blank and click Next — the macro will skip this step automatically. If your preferred seat is already taken, then macro will auto-assign you seat(s), but you can always change those by clicking "edit spots" in your reservation.',
     captureKey: 'spotPreferences',
     captureType: 'typed'
   },
   SET_SCHEDULE: {
-    title: 'Step 10 - Booking Schedule',
+    title: 'Step 9 - Booking Schedule',
     instruction: 'How far in advance should the macro book, (ideally when the booking window opens "n" days in advance of the class), and what time should it run?',
     captureKey: 'schedule',
     captureType: 'typed'
   },
 EXPORT: {
-  title: 'Step 11 - Name & Download',
+  title: 'Step 10 - Name & Download',
   instruction: 'Give this booking a unique name (e.g. "Pickleball_Wednesday" or "Yoga_Friday"). Then click Export to download your 3 automation files.',
   captureKey: null,
   captureType: null
 }
 };
 
-const URL_ARMED_INSTRUCTIONS = {
-  CAPTURE_SCHEDULE_URL: 'Now click anywhere on the Class Schedule page to capture its URL...'
-};
 
 const CLICK_ARMED_INSTRUCTIONS = {
   CAPTURE_CLASS_NAME: 'Now click the class name on the Class Schedule page...',
@@ -345,20 +334,19 @@ function loadTypedValues(stepName) {
 function collectTypedInput() {
   const stepName = STEPS[state.currentStep];
 
-  if (stepName === 'CAPTURE_CLUB') {
-    const slug = document.getElementById('t-club').value;
-    if (slug && CLUBS_DATA) {
-      for (const region of Object.values(CLUBS_DATA)) {
-        if (region[slug]) {
-          state.config.club = slug;
-          state.config.scheduleUrl = region[slug].url
-            .replace('.html', '/classes.html');
-          state.config.clubHomeUrl = region[slug].url;
-          break;
-        }
+if (stepName === 'CAPTURE_CLUB') {
+  const slug = document.getElementById('t-club').value;
+  if (slug && CLUBS_DATA) {
+    for (const region of Object.values(CLUBS_DATA)) {
+      if (region[slug]) {
+        state.config.club = slug;
+        state.config.clubHomeUrl = region[slug].url;
+        state.config.scheduleUrl = region[slug].url.replace('.html', '/classes.html');
+        break;
       }
     }
   }
+}
   if (stepName === 'CAPTURE_TIMESLOT') {
     state.config.timeslot = {
       hour: document.getElementById('t-hour').value,
@@ -581,8 +569,8 @@ document.getElementById('btn-export').addEventListener('click', () => {
     '##runMinute##':         runMinute,
     '##timezone##':          s.timezone || 'America/Toronto',
     '##runImmediately##':    s.runImmediately ? 'true' : 'false',
-    '##username##': jsStrEscaped(s.username),  // was: s.username || ''
-    '##password##': jsStrEscaped(s.password),  // was: s.password || ''
+    '##username##': s.username || '',
+    '##password##': s.password || '',
 
     '##participant0##':      parts[0] || '',
     '##participant1##':      parts[1] || '',

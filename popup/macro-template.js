@@ -518,12 +518,27 @@ window.MACRO_TEMPLATE = {
       "Value": "participantCount",
       "Description": "Snapshot checked-participant count for spot-assignment readiness check. Falls back to 1 if checkboxes already unmounted."
     },
-    {
-    "Command": "executeAsyncScript",
-    "Target": "var done=arguments[arguments.length-1]; var start=Date.now(); (function tick(){ var hasMap=document.querySelectorAll('[data-testid=\"spotAvailable\"]').length>0; var hasFinish=!!document.querySelector('[data-testid=\"finishBtn\"]'); if(hasMap){ done('SEAT_MAP'); } else if(hasFinish && Date.now()-start>1500){ done('NO_SEAT_MAP'); } else if(Date.now()-start>10000){ done(hasFinish?'NO_SEAT_MAP':'SEAT_MAP'); } else { setTimeout(tick,250); } })();",
+{ "Command": "executeScript",
+  "Target": "return document.querySelectorAll('[data-testid=\"spotAvailable\"]').length > 0 ? 'SEAT_MAP' : (document.querySelector('[data-testid=\"finishBtn\"]') !== null ? 'NO_SEAT_MAP' : 'WAIT');",
+  "Value": "postReserveFlow",
+  "Description": "First check — WAIT if page not ready yet." },
+
+{ "Command": "while",
+  "Target": "${postReserveFlow} == 'WAIT'",
+  "Value": "",
+  "Description": "Poll until seat map or finish button appears." },
+  { "Command": "pause", "Target": "500", "Value": "" },
+  { "Command": "executeScript",
+    "Target": "return document.querySelectorAll('[data-testid=\"spotAvailable\"]').length > 0 ? 'SEAT_MAP' : (document.querySelector('[data-testid=\"finishBtn\"]') !== null ? 'NO_SEAT_MAP' : 'WAIT');",
     "Value": "postReserveFlow",
-    "Description": "Branch detection: spotAvailable elements only render for classes with assigned seating."
-    },
+    "Description": "Re-check." },
+{ "Command": "end", "Target": "", "Value": "" },
+{
+  "Command": "executeScript",
+  "Target": "return document.querySelectorAll('[data-testid=\"spotAvailable\"]').length > 0 ? 'SEAT_MAP' : 'NO_SEAT_MAP';",
+  "Value": "postReserveFlow",
+  "Description": "Safe to branch now — page is fully rendered."
+},
     {
       "Command": "if",
       "Target": "${postReserveFlow} == 'SEAT_MAP'",
@@ -920,12 +935,26 @@ window.MACRO_TEMPLATE = {
     "Value": "20000",
     "Description": "Wait up to 20s for the Finish button to mount."
     },
-    {
-    "Command": "executeAsyncScript",
-    "Target": "var done=arguments[arguments.length-1]; var start=Date.now(); (function tick(){ var btns=Array.from(document.querySelectorAll('[data-testid=\"finishBtn\"]')); var btn=btns.find(function(b){return b.offsetParent!==null && !b.disabled;})||btns.find(function(b){return b.offsetParent!==null;})||btns[0]; if(btn && !btn.disabled && btn.offsetParent!==null){ done('READY'); } else if(Date.now()-start>15000){ done(btn ? (btn.disabled?'DISABLED':'READY') : 'NOT_FOUND'); } else { setTimeout(tick,250); } })();",
+{ "Command": "waitForElementPresent",
+  "Target": "css=[data-testid='finishBtn']",
+  "Value": "20000",
+  "Description": "Wait for DOM mount first." },
+
+{ "Command": "executeScript",
+  "Target": "var btns=Array.from(document.querySelectorAll('[data-testid=\"finishBtn\"]')); var btn=btns.find(function(b){return b.offsetParent!==null && !b.disabled;})||btns.find(function(b){return b.offsetParent!==null;})||btns[0]; return btn ? (btn.disabled ? 'DISABLED' : 'READY') : 'NOT_FOUND';",
+  "Value": "finishBtnState",
+  "Description": "First check." },
+
+{ "Command": "while",
+  "Target": "${finishBtnState} != 'READY'",
+  "Value": "",
+  "Description": "Poll until enabled." },
+  { "Command": "pause", "Target": "500", "Value": "" },
+  { "Command": "executeScript",
+    "Target": "var btns=Array.from(document.querySelectorAll('[data-testid=\"finishBtn\"]')); var btn=btns.find(function(b){return b.offsetParent!==null && !b.disabled;})||btns.find(function(b){return b.offsetParent!==null;})||btns[0]; return btn ? (btn.disabled ? 'DISABLED' : 'READY') : 'NOT_FOUND';",
     "Value": "finishBtnState",
-    "Description": "Poll until Finish is visible and enabled, up to 15s."
-    },
+    "Description": "Re-check." },
+{ "Command": "end", "Target": "", "Value": "" },
     {
       "Command": "if",
       "Target": "${finishBtnState} != 'READY'",
