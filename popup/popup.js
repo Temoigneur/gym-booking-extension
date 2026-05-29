@@ -420,35 +420,30 @@ if (restartBtn) {
 document.getElementById('btn-capture').addEventListener('click', () => {
   const stepName = STEPS[state.currentStep];
   const meta = STEP_META[stepName];
-  if (meta.captureType === 'url') {
-    chrome.tabs.query({ active: true }, (tabs) => {
-      const lifetimeTab = tabs.find(t => t.url && t.url.includes('lifetime.life'))
-        || tabs[0];
-      if (!lifetimeTab) return;
-      chrome.tabs.sendMessage(lifetimeTab.id,
-        { type: 'START_RECORDING', recordingType: 'url' },
-        () => {
-          const msg = URL_ARMED_INSTRUCTIONS[stepName]
-            || 'Now click anywhere on the page to capture its URL...';
-          document.getElementById('step-instruction').textContent = msg;
-        }
-      );
-    });
-  } else {
-    chrome.tabs.query({ active: true }, (tabs) => {
-      const lifetimeTab = tabs.find(t => t.url && t.url.includes('lifetime.life'))
-        || tabs[0];
-      if (!lifetimeTab) return;
-      chrome.tabs.sendMessage(lifetimeTab.id,
-        { type: 'START_RECORDING', recordingType: 'click' },
-        () => {
-          const msg = CLICK_ARMED_INSTRUCTIONS[stepName]
-            || CLICK_ARMED_INSTRUCTIONS.DEFAULT;
-          document.getElementById('step-instruction').textContent = msg;
-        }
-      );
-    });
-  }
+  const recordingType = meta.captureType === 'url' ? 'url' : 'click';
+
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    const lifetimeTab = tabs.find(t => t.url &&
+      (t.url.includes('lifetime.life') || t.url.includes('ltfitness.ca'))) || tabs[0];
+    if (!lifetimeTab) return;
+
+    chrome.scripting.executeScript(
+      { target: { tabId: lifetimeTab.id }, files: ['content/recorder.js'] },
+      () => {
+        void chrome.runtime.lastError;
+        chrome.tabs.sendMessage(lifetimeTab.id,
+          { type: 'START_RECORDING', recordingType },
+          () => {
+            void chrome.runtime.lastError;
+            const msg = recordingType === 'url'
+              ? (URL_ARMED_INSTRUCTIONS[stepName] || 'Now click anywhere on the page to capture its URL...')
+              : (CLICK_ARMED_INSTRUCTIONS[stepName] || CLICK_ARMED_INSTRUCTIONS.DEFAULT);
+            document.getElementById('step-instruction').textContent = msg;
+          }
+        );
+      }
+    );
+  });
 });
 
 // --- Capture Polling ----------------------------------------------------------

@@ -1,3 +1,6 @@
+if (window.__gymRecorderLoaded) { /* already injected */ } else {
+window.__gymRecorderLoaded = true;
+
 let isRecording = false;
 let recordingType = 'click'; // 'click' or 'url'
 let lastHighlighted = null;
@@ -136,3 +139,4 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     sendResponse({ ok: true });
   }
 });
+}

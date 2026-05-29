@@ -1,3 +1,5 @@
+
+
 // Open side panel when extension icon is clicked — no dropdown.
 chrome.sidePanel
   .setPanelBehavior({ openPanelOnActionClick: true })
@@ -10,22 +12,29 @@ chrome.action.onClicked.addListener((tab) => {
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
   // Relay recording start/stop from the popup to the recorder content script.
-  if (msg.type === 'START_RECORDING' || msg.type === 'STOP_RECORDING') {
-    chrome.tabs.query({ active: true }, (tabs) => {
-      const lifetimeTab = tabs.find(t => t.url && t.url.includes('lifetime.life'))
+if (msg.type === 'START_RECORDING' || msg.type === 'STOP_RECORDING') {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const lifetimeTab = tabs.find(t => t.url &&
+        (t.url.includes('lifetime.life') || t.url.includes('ltfitness.ca')))
         || tabs[0];
       if (!lifetimeTab) {
         sendResponse({ ok: false, error: 'No tab found' });
         return;
       }
-      chrome.tabs.sendMessage(lifetimeTab.id, msg, (resp) => {
-        if (chrome.runtime.lastError) {
-          console.log('[sw] sendMessage error:', chrome.runtime.lastError.message);
-          sendResponse({ ok: false });
-        } else {
-          sendResponse(resp);
+      chrome.scripting.executeScript(
+        { target: { tabId: lifetimeTab.id }, files: ['content/recorder.js'] },
+        () => {
+          void chrome.runtime.lastError; // ignore "already injected"
+          chrome.tabs.sendMessage(lifetimeTab.id, msg, (resp) => {
+            if (chrome.runtime.lastError) {
+              console.log('[sw] sendMessage error:', chrome.runtime.lastError.message);
+              sendResponse({ ok: false });
+            } else {
+              sendResponse(resp);
+            }
+          });
         }
-      });
+      );
     });
     return true;
   }
