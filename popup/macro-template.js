@@ -131,7 +131,7 @@ window.MACRO_TEMPLATE = {
     },
     {
       "Command": "executeScript",
-      "Target": "const d = new Date(new Date().toLocaleString('en-US', {timeZone: '##timezone##'})); d.setDate(d.getDate() + parseInt('##daysAhead##')); const mm = String(d.getMonth()+1).padStart(2,'0'); const dd = String(d.getDate()).padStart(2,'0'); return d.getFullYear() + '-' + mm + '-' + dd;",
+      "Target": "return '##targetDate##';",
       "Value": "targetDate",
       "Description": "Calculate target booking date from today + daysAhead in the user's timezone"
     },
@@ -611,11 +611,11 @@ window.MACRO_TEMPLATE = {
       "Value": "",
       "Description": ""
     },
-    {
+{
       "Command": "executeScript",
-      "Target": "var i=0; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var btn=Array.from(document.querySelectorAll('button')).find(function(b){ return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null && new RegExp('\\\\b'+n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&')+'\\\\b.*assigned spot','i').test((b.parentElement&&b.parentElement.textContent)||''); }); if(!btn){ return 'NO_EDIT'; } btn.click(); return 'CLICKED';",
+      "Target": "var i=0; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var esc=n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&'); var rx=new RegExp('\\\\b'+esc+'\\\\b.*assigned spot','i'); var allEdit=Array.from(document.querySelectorAll('button')).filter(function(b){return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); var btn=allEdit.find(function(b){ var row=b.closest('div.m-b-0'); return row && rx.test((row.textContent||'').replace(/\\\\s+/g,' ')); }); if(!btn){ return 'NO_EDIT'; } window.__lt.activeName=n; btn.click(); return 'CLICKED';",
       "Value": "editClick1",
-      "Description": "Find and click Edit Spot for participant."
+      "Description": "Find Edit Spot by participant row (name match), fallback to i-th visible button."
     },
     {
       "Command": "pause",
@@ -655,7 +655,7 @@ window.MACRO_TEMPLATE = {
     },
     {
       "Command": "executeScript",
-      "Target": "var i=1; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var btn=Array.from(document.querySelectorAll('button')).find(function(b){ return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null && new RegExp('\\\\b'+n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&')+'\\\\b.*assigned spot','i').test((b.parentElement&&b.parentElement.textContent)||''); }); if(!btn){ return 'NO_EDIT'; } btn.click(); return 'CLICKED';",
+      "Target": "var i=1; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var esc=n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&'); var rx=new RegExp('\\\\b'+esc+'\\\\b.*assigned spot','i'); var allEdit=Array.from(document.querySelectorAll('button')).filter(function(b){return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); var btn=allEdit.find(function(b){ var row=b.closest('div.m-b-0'); return row && rx.test((row.textContent||'').replace(/\\\\s+/g,' ')); }); if(!btn){ return 'NO_EDIT'; } window.__lt.activeName=n; btn.click(); return 'CLICKED';",
       "Value": "editClick2",
       "Description": ""
     },
@@ -697,7 +697,7 @@ window.MACRO_TEMPLATE = {
     },
     {
       "Command": "executeScript",
-      "Target": "var i=2; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var btn=Array.from(document.querySelectorAll('button')).find(function(b){ return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null && new RegExp('\\\\b'+n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&')+'\\\\b.*assigned spot','i').test((b.parentElement&&b.parentElement.textContent)||''); }); if(!btn){ return 'NO_EDIT'; } btn.click(); return 'CLICKED';",
+      "Target": "var i=2; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var esc=n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&'); var rx=new RegExp('\\\\b'+esc+'\\\\b.*assigned spot','i'); var allEdit=Array.from(document.querySelectorAll('button')).filter(function(b){return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); var btn=allEdit.find(function(b){ var row=b.closest('div.m-b-0'); return row && rx.test((row.textContent||'').replace(/\\\\s+/g,' ')); }); if(!btn){ return 'NO_EDIT'; } window.__lt.activeName=n; btn.click(); return 'CLICKED';",
       "Value": "editClick3",
       "Description": ""
     },
@@ -739,7 +739,7 @@ window.MACRO_TEMPLATE = {
     },
     {
       "Command": "executeScript",
-      "Target": "var i=3; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var btn=Array.from(document.querySelectorAll('button')).find(function(b){ return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null && new RegExp('\\\\b'+n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&')+'\\\\b.*assigned spot','i').test((b.parentElement&&b.parentElement.textContent)||''); }); if(!btn){ return 'NO_EDIT'; } btn.click(); return 'CLICKED';",
+      "Target": "var i=3; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var esc=n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&'); var rx=new RegExp('\\\\b'+esc+'\\\\b.*assigned spot','i'); var allEdit=Array.from(document.querySelectorAll('button')).filter(function(b){return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); var btn=allEdit.find(function(b){ var row=b.closest('div.m-b-0'); return row && rx.test((row.textContent||'').replace(/\\\\s+/g,' ')); }); if(!btn){ return 'NO_EDIT'; } window.__lt.activeName=n; btn.click(); return 'CLICKED';",
       "Value": "editClick4",
       "Description": ""
     },
@@ -781,7 +781,7 @@ window.MACRO_TEMPLATE = {
     },
     {
       "Command": "executeScript",
-      "Target": "var i=4; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var btn=Array.from(document.querySelectorAll('button')).find(function(b){ return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null && new RegExp('\\\\b'+n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&')+'\\\\b.*assigned spot','i').test((b.parentElement&&b.parentElement.textContent)||''); }); if(!btn){ return 'NO_EDIT'; } btn.click(); return 'CLICKED';",
+      "Target": "var i=4; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var esc=n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&'); var rx=new RegExp('\\\\b'+esc+'\\\\b.*assigned spot','i'); var allEdit=Array.from(document.querySelectorAll('button')).filter(function(b){return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); var btn=allEdit.find(function(b){ var row=b.closest('div.m-b-0'); return row && rx.test((row.textContent||'').replace(/\\\\s+/g,' ')); }); if(!btn){ return 'NO_EDIT'; } window.__lt.activeName=n; btn.click(); return 'CLICKED';",
       "Value": "editClick5",
       "Description": ""
     },
@@ -823,7 +823,7 @@ window.MACRO_TEMPLATE = {
     },
     {
       "Command": "executeScript",
-      "Target": "var i=5; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var btn=Array.from(document.querySelectorAll('button')).find(function(b){ return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null && new RegExp('\\\\b'+n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&')+'\\\\b.*assigned spot','i').test((b.parentElement&&b.parentElement.textContent)||''); }); if(!btn){ return 'NO_EDIT'; } btn.click(); return 'CLICKED';",
+      "Target": "var i=5; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var esc=n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&'); var rx=new RegExp('\\\\b'+esc+'\\\\b.*assigned spot','i'); var allEdit=Array.from(document.querySelectorAll('button')).filter(function(b){return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); var btn=allEdit.find(function(b){ var row=b.closest('div.m-b-0'); return row && rx.test((row.textContent||'').replace(/\\\\s+/g,' ')); }); if(!btn){ return 'NO_EDIT'; } window.__lt.activeName=n; btn.click(); return 'CLICKED';",
       "Value": "editClick6",
       "Description": ""
     },
@@ -865,7 +865,7 @@ window.MACRO_TEMPLATE = {
     },
     {
       "Command": "executeScript",
-      "Target": "var i=6; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var btn=Array.from(document.querySelectorAll('button')).find(function(b){ return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null && new RegExp('\\\\b'+n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&')+'\\\\b.*assigned spot','i').test((b.parentElement&&b.parentElement.textContent)||''); }); if(!btn){ return 'NO_EDIT'; } btn.click(); return 'CLICKED';",
+      "Target": "var i=6; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var esc=n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&'); var rx=new RegExp('\\\\b'+esc+'\\\\b.*assigned spot','i'); var allEdit=Array.from(document.querySelectorAll('button')).filter(function(b){return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); var btn=allEdit.find(function(b){ var row=b.closest('div.m-b-0'); return row && rx.test((row.textContent||'').replace(/\\\\s+/g,' ')); }); if(!btn){ return 'NO_EDIT'; } window.__lt.activeName=n; btn.click(); return 'CLICKED';",
       "Value": "editClick7",
       "Description": ""
     },

@@ -91,7 +91,8 @@ document.addEventListener('click', (e) => {
       captureType: 'url',
       time: Date.now(),
       url: window.location.href,
-      cleanUrl: window.location.origin + window.location.pathname
+      cleanUrl: window.location.origin + window.location.pathname,
+      pageTitle: document.title
     };
   } else {
     const selector = getBestSelector(e.target);
@@ -102,7 +103,8 @@ document.addEventListener('click', (e) => {
       selector,
       tagName: e.target.tagName,
       innerText: e.target.innerText?.trim().slice(0, 80),
-      url: window.location.href
+      url: window.location.href,
+      pageTitle: document.title
     };
   }
 

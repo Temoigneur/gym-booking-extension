@@ -97,9 +97,40 @@ const CLICK_ARMED_INSTRUCTIONS = {
   DEFAULT: 'Now click the element on the page...'
 };
 
+// ─── BLOCKED RESOURCES ───────────────────────────────────────────────────────
+const BLOCKED_RESOURCES = {
+  courts: {
+    keywords: [
+      'pickleball', 'tennis', 'squash',
+      'racquetball', 'basketball', 'court',
+      'court-reservation', 'court_reservation'
+    ],
+    reason: "Court bookings aren't supported — this tool is for group fitness classes only. Please book courts directly through the Life Time app."
+  }
+};
+
+function checkBlockedResource(urlOrTitle) {
+  if (!urlOrTitle) return { blocked: false };
+  const text = urlOrTitle.toLowerCase();
+  for (const [category, config] of Object.entries(BLOCKED_RESOURCES)) {
+    for (const keyword of config.keywords) {
+      if (text.includes(keyword)) {
+        return { blocked: true, reason: config.reason };
+      }
+    }
+  }
+  return { blocked: false };
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 // --- Render -------------------------------------------------------------------
 
 function render() {
+  const stepError = document.getElementById('step-error');
+  if (stepError) {
+    stepError.style.display = 'none';
+    stepError.textContent = '';
+  }
   const stepName = STEPS[state.currentStep];
   const meta = STEP_META[stepName];
   const captured = meta.captureKey ? state.config[meta.captureKey] : null;
@@ -455,6 +486,29 @@ function applyCapture(capture) {
   const stepName = STEPS[state.currentStep];
   const meta = STEP_META[stepName];
   if (!meta.captureKey || meta.captureType === 'typed') return false;
+
+  // ─── BLOCK CHECK ─────────────────────────────────────────────
+  if (stepName === 'CAPTURE_CLASS_NAME') {
+    const urlAndTitle = `${capture.url || ''} ${capture.pageTitle || ''}`;
+    const innerText = (capture.innerText || '').toLowerCase();
+    const COURT_SPORT_WORDS = [
+      'pickleball', 'tennis', 'squash',
+      'racquetball', 'basketball', 'court'
+    ];
+    const innerTextBlocked = COURT_SPORT_WORDS.some(word =>
+      new RegExp(`\\b${word}\\b`).test(innerText)
+    );
+    const urlCheck = checkBlockedResource(urlAndTitle);
+    if (urlCheck.blocked || innerTextBlocked) {
+      const stepError = document.getElementById('step-error');
+      if (stepError) {
+        stepError.textContent = "⚠️ Court bookings aren't supported — this tool is for group fitness classes only. Please book courts directly through the Life Time app.";
+        stepError.style.display = 'block';
+      }
+      return false;
+    }
+  }
+  // ─────────────────────────────────────────────────────────────
 
   if (capture.captureType === 'url') {
     state.config[meta.captureKey] = stepName === 'CAPTURE_SCHEDULE_URL'
