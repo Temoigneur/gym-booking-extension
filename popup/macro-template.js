@@ -33,35 +33,17 @@ window.MACRO_TEMPLATE = {
       "Value": "",
       "Description": ""
     },
-    {
-      "Command": "executeScript",
-      "Target": "var logged=false;try{var els=document.querySelectorAll('header a, nav a, header button, nav button');for(var i=0;i<els.length;i++){var t=(els[i].innerText||'').trim();if(/view account|sign out|log\\s?out/i.test(t)){logged=true;break;}}}catch(e){}return logged?'LOGGED_IN':'LOGGED_OUT';",
-      "Value": "loginState",
-      "Description": "Detect login via Life Time auth cookies (reliable)"
-    },
+{
+  "Command": "executeScript",
+  "Target": "var hasAuth=document.cookie.split(';').some(function(c){var n=c.trim().split('=')[0];return n==='lt-authentication'||n==='lt-authorization'||n==='LTFSSOIDCookie';});return hasAuth?'LOGGED_IN':'LOGGED_OUT';",
+  "Value": "loginState",
+  "Description": "Detect login via Life Time auth cookies (reliable)"
+},
 {
       "Command": "if",
       "Target": "${loginState} == 'LOGGED_OUT'",
       "Value": "",
       "Description": ""
-    },
-    {
-      "Command": "open",
-      "Target": "https://my.lifetime.life/logout",
-      "Value": "",
-      "Description": "Force logout to clear any stale partial session cookie"
-    },
-    {
-      "Command": "waitForPageToLoad",
-      "Target": "30000",
-      "Value": "",
-      "Description": ""
-    },
-    {
-      "Command": "pause",
-      "Target": "2000",
-      "Value": "",
-      "Description": "Let logout settle and cookie clear"
     },
     {
       "Command": "open",
