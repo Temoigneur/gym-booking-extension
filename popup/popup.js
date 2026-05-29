@@ -12,6 +12,45 @@ const STEPS = [
   'EXPORT'
 ];
 
+// ─── DIAG LOGGER (beta) ───────────────────────────────────────────────────────
+// Lightweight, crash-proof logging for beta testers. Never throws.
+const __DIAG = { lines: [], max: 500 };
+function logDiag(tag, msg, extra) {
+  try {
+    const ts = new Date().toISOString().slice(11, 23);
+    let line = '[' + ts + '] [' + tag + '] ' + msg;
+    if (extra !== undefined) {
+      let e = extra;
+      try { e = (typeof extra === 'object') ? JSON.stringify(redactForLog(extra)) : String(extra); }
+      catch (_) { e = '[unserializable]'; }
+      line += ' ' + e;
+    }
+    __DIAG.lines.push(line);
+    if (__DIAG.lines.length > __DIAG.max) __DIAG.lines.shift();
+    console.log(line);
+    try { chrome.storage.local.set({ diagLog: __DIAG.lines.slice(-__DIAG.max) }); } catch (_) {}
+  } catch (_) { /* logging must never break the app */ }
+}
+// Strip credentials before anything is logged or copied.
+function redactForLog(obj) {
+  try {
+    const clone = JSON.parse(JSON.stringify(obj));
+    const scrub = (o) => {
+      if (!o || typeof o !== 'object') return;
+      for (const k of Object.keys(o)) {
+        if (/pass|pwd|secret|token/i.test(k)) o[k] = '***REDACTED***';
+        else if (typeof o[k] === 'object') scrub(o[k]);
+      }
+    };
+    scrub(clone);
+    return clone;
+  } catch (_) { return {}; }
+}
+function getDiagText() {
+  return (__DIAG.lines || []).join('\n');
+}
+// ──────────────────────────────────────────────────────────────────────────────
+
 let state = {
   currentStep: 0,
   config: {}
@@ -206,6 +245,8 @@ function render() {
   }
 
   const isExport = stepName === 'EXPORT';
+  const copyLogBtn = document.getElementById('btn-copylog');
+  if (copyLogBtn) copyLogBtn.style.display = isExport ? 'block' : 'none';
   document.getElementById('btn-export').style.display = isExport ? 'block' : 'none';
   document.getElementById('btn-restart').style.display = isExport ? 'block' : 'none';
   document.getElementById('btn-next').style.display    = isExport ? 'none'  : 'block';
@@ -452,7 +493,8 @@ document.getElementById('btn-capture').addEventListener('click', () => {
   const stepName = STEPS[state.currentStep];
   const meta = STEP_META[stepName];
   const recordingType = meta.captureType === 'url' ? 'url' : 'click';
-
+  logDiag('capture', 'armed', { step: stepName, recordingType });
+  
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const lifetimeTab = tabs.find(t => t.url &&
       (t.url.includes('lifetime.life') || t.url.includes('ltfitness.ca'))) || tabs[0];
@@ -462,6 +504,8 @@ document.getElementById('btn-capture').addEventListener('click', () => {
       { target: { tabId: lifetimeTab.id }, files: ['content/recorder.js'] },
       () => {
         void chrome.runtime.lastError;
+        logDiag('capture', 'START_RECORDING ack', { lastError: (chrome.runtime.lastError && chrome.runtime.lastError.message) || null });
+        logDiag('capture', 'recorder injected', { lastError: (chrome.runtime.lastError && chrome.runtime.lastError.message) || null });
         chrome.tabs.sendMessage(lifetimeTab.id,
           { type: 'START_RECORDING', recordingType },
           () => {
@@ -483,6 +527,7 @@ let capturePoller = null;
 let lastAppliedCaptureTime = 0;
 
 function applyCapture(capture) {
+  logDiag('capture', 'applyCapture', { step: STEPS[state.currentStep], captureType: capture && capture.captureType });
   const stepName = STEPS[state.currentStep];
   const meta = STEP_META[stepName];
   if (!meta.captureKey || meta.captureType === 'typed') return false;
@@ -505,6 +550,7 @@ function applyCapture(capture) {
         stepError.textContent = "⚠️ Court bookings aren't supported — this tool is for group fitness classes only. Please book courts directly through the Life Time app.";
         stepError.style.display = 'block';
       }
+      logDiag('block', 'court booking blocked', { step: stepName });
       return false;
     }
   }
@@ -549,6 +595,7 @@ startCapturePolling();
 // --- Export -------------------------------------------------------------------
 
 document.getElementById('btn-export').addEventListener('click', () => {
+  logDiag('export', 'export started', { participants: (state.config.participants || []).length });   // ← ADD THIS LINE
   const c = state.config;
   const t = c.timeslot || {};
   const s = c.schedule || {};
@@ -672,6 +719,7 @@ document.getElementById('btn-export').addEventListener('click', () => {
     macroJson = JSON.parse(macroStr);
   } catch (err) {
     console.error('[Export] Macro substitution produced invalid JSON:', err);
+    logDiag('export', 'export FAILED — invalid JSON', { error: String(err && err.message || err) });
     for (const [k, v] of Object.entries(replacements)) {
       if (typeof v === 'string' && (v.includes('"') || v.includes('\\'))) {
         console.warn('  Suspect placeholder:', k, '→', v);
@@ -685,7 +733,7 @@ document.getElementById('btn-export').addEventListener('click', () => {
   const rawName   = (document.getElementById('t-macroname')?.value || state.config.macroName || 'BookingTemplate').trim();
   const macroName = rawName.replace(/[^a-zA-Z0-9_\-]/g, '_');
   state.config.macroName = macroName;
-
+  logDiag('export', 'export OK', { macroName });
   // exportAll() downloads all 4 files: macro JSON + RunBooking.bat + RegisterTask.bat + README
   exportAll(state.config, macroJson, macroName);
 });
@@ -723,3 +771,17 @@ function loadState() {
 }
 
 loadState();
+
+// ─── COPY DEBUG LOG BUTTON (beta) ─────────────────────────────────────────────
+(function () {
+  const btn = document.getElementById('btn-copylog');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    const text = getDiagText() || '(no log entries yet)';
+    navigator.clipboard.writeText(text).then(
+      () => { btn.textContent = '✅ Copied — paste it to the developer'; setTimeout(() => { btn.textContent = '📋 Copy debug log'; }, 2500); },
+      () => { btn.textContent = '⚠️ Copy failed — open DevTools console'; }
+    );
+  });
+})();
+// ──────────────────────────────────────────────────────────────────────────────

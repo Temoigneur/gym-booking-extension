@@ -35,15 +35,33 @@ window.MACRO_TEMPLATE = {
     },
     {
       "Command": "executeScript",
-      "Target": "var c = document.cookie || ''; var hasAuth = /(^|;)\\s*(lt-authentication|lt-authorization|LTFSSOIDCookie)=/.test(c); return hasAuth ? 'LOGGED_IN' : 'LOGGED_OUT';",
+      "Target": "var logged=false;try{var els=document.querySelectorAll('header a, nav a, header button, nav button');for(var i=0;i<els.length;i++){var t=(els[i].innerText||'').trim();if(/view account|sign out|log\\s?out/i.test(t)){logged=true;break;}}}catch(e){}return logged?'LOGGED_IN':'LOGGED_OUT';",
       "Value": "loginState",
       "Description": "Detect login via Life Time auth cookies (reliable)"
     },
-    {
+{
       "Command": "if",
       "Target": "${loginState} == 'LOGGED_OUT'",
       "Value": "",
       "Description": ""
+    },
+    {
+      "Command": "open",
+      "Target": "https://my.lifetime.life/logout",
+      "Value": "",
+      "Description": "Force logout to clear any stale partial session cookie"
+    },
+    {
+      "Command": "waitForPageToLoad",
+      "Target": "30000",
+      "Value": "",
+      "Description": ""
+    },
+    {
+      "Command": "pause",
+      "Target": "2000",
+      "Value": "",
+      "Description": "Let logout settle and cookie clear"
     },
     {
       "Command": "open",
@@ -309,6 +327,78 @@ window.MACRO_TEMPLATE = {
       "Description": "Wait for presence, not visibility \u2014 Vue renders the button into the DOM before it is painted"
     },
     {
+  "Command": "executeScript",
+  "Target": "var c=document.cookie||''; var hasAuth=/(^|;)\\s*(lt-authentication|lt-authorization|LTFSSOIDCookie)=/.test(c); var btns=Array.from(document.querySelectorAll('[data-testid=\"reserveButton\"]')); var btn=btns.find(function(b){return b.offsetParent!==null;})||btns[0]; var txt=btn?(btn.innerText||'').trim():''; return (hasAuth && /log ?in to (reserve|register)/i.test(txt)) ? 'STALE' : 'READY';",
+  "Value": "reserveLabelState",
+  "Description": "Stale logged-out label while authed? Then the button won't function until reload."
+},
+{
+  "Command": "gotoIf_v2",
+  "Target": "${reserveLabelState} == 'READY'",
+  "Value": "reserveLabelOk",
+  "Description": "Skip reload if button already reflects logged-in state."
+},
+{
+  "Command": "executeScript",
+  "Target": "location.reload(); return 'RELOADING';",
+  "Value": "reloadKick",
+  "Description": "Reload the current class-details page so Vue rehydrates membership state."
+},
+{
+  "Command": "pause",
+  "Target": "3000",
+  "Value": "",
+  "Description": "Let the reload navigation start and settle."
+},
+{
+  "Command": "waitForElementNotVisible",
+  "Target": "css=[data-testid='sectionSpinner']",
+  "Value": "20000",
+  "Description": "Wait for the schedule/details spinner to clear after reload."
+},
+{
+  "Command": "waitForElementPresent",
+  "Target": "css=[data-testid='reserveButton']",
+  "Value": "20000",
+  "Description": "Reserve button remounts after reload."
+},
+{
+  "Command": "executeScript",
+  "Target": "var btns=Array.from(document.querySelectorAll('[data-testid=\"reserveButton\"]')); var btn=btns.find(function(b){return b.offsetParent!==null;})||btns[0]; var txt=btn?(btn.innerText||'').trim():''; return /log ?in to (reserve|register)/i.test(txt) ? 'STILL_STALE' : 'READY';",
+  "Value": "reserveLabelState2",
+  "Description": "Confirm the button now functions post-reload."
+},
+{
+  "Command": "if",
+  "Target": "${reserveLabelState2} == 'STILL_STALE'",
+  "Value": "",
+  "Description": ""
+},
+{
+  "Command": "echo",
+  "Target": "ERROR: Reserve button stuck on 'Log in to Register' even after reload — session may not be fully established.",
+  "Value": "red",
+  "Description": ""
+},
+{
+  "Command": "gotoLabel",
+  "Target": "END_OF_MACRO",
+  "Value": "",
+  "Description": "Abort cleanly if the button never recovers."
+},
+{
+  "Command": "end",
+  "Target": "",
+  "Value": "",
+  "Description": ""
+},
+{
+  "Command": "label",
+  "Target": "reserveLabelOk",
+  "Value": "",
+  "Description": "Button reflects logged-in state — proceed to reserve."
+},
+    {
       "Command": "comment",
       "Target": "CHECK RESERVE BUTTON TEXT",
       "Value": "",
@@ -316,13 +406,13 @@ window.MACRO_TEMPLATE = {
     },
     {
       "Command": "executeScript",
-      "Target": "var btns=Array.from(document.querySelectorAll('[data-testid=\"reserveButton\"]')); var btn=btns.find(function(b){return b.offsetParent!==null;})||btns[0]; return btn ? btn.innerText.trim() : 'NOT_FOUND';",
+      "Target": "var c=document.cookie||''; var hasAuth=/(^|;)\\s*(lt-authentication|lt-authorization|LTFSSOIDCookie)=/.test(c); var btns=Array.from(document.querySelectorAll('[data-testid=\"reserveButton\"]')); var btn=btns.find(function(b){return b.offsetParent!==null;})||btns[0]; var txt=btn?(btn.innerText||'').trim():'NOT_FOUND'; if(/log ?in to (reserve|register)/i.test(txt)){ return hasAuth ? 'LOGGED_IN_BUT_LABEL_STALE' : 'LOGGED_OUT'; } return 'OK:'+txt;",
       "Value": "reserveButtonText",
       "Description": ""
     },
     {
       "Command": "if",
-      "Target": "${reserveButtonText} == 'Log in to Reserve'",
+      "Target": "${reserveButtonText} == 'LOGGED_OUT'",
       "Value": "",
       "Description": ""
     },
@@ -613,7 +703,7 @@ window.MACRO_TEMPLATE = {
     },
 {
       "Command": "executeScript",
-      "Target": "var i=0; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var esc=n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&'); var rx=new RegExp('\\\\b'+esc+'\\\\b.*assigned spot','i'); var allEdit=Array.from(document.querySelectorAll('button')).filter(function(b){return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); var btn=allEdit.find(function(b){ var row=b.closest('div.m-b-0'); return row && rx.test((row.textContent||'').replace(/\\\\s+/g,' ')); }); if(!btn){ return 'NO_EDIT'; } window.__lt.activeName=n; btn.click(); return 'CLICKED';",
+      "Target": "var i=0; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var esc=n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&'); var rx=new RegExp('\\\\b'+esc+'\\\\b.*assigned spot','i'); var allEdit=Array.from(document.querySelectorAll('button')).filter(function(b){return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); function tr(b){var el=b;while(el&&el.parentElement){var p=el.parentElement;var c=Array.from(p.querySelectorAll('button')).filter(function(x){return /^edit spot$/i.test((x.textContent||'').trim());}).length;if(c>1)break;el=p;}return el;} var btn=allEdit.find(function(b){ var row=tr(b); return row && rx.test((row.textContent||'').replace(/\\\\s+/g,' ')); }); if(!btn){ return 'NO_EDIT'; } window.__lt.activeName=n; btn.click(); return 'CLICKED';",
       "Value": "editClick1",
       "Description": "Find Edit Spot by participant row (name match), fallback to i-th visible button."
     },
@@ -655,7 +745,7 @@ window.MACRO_TEMPLATE = {
     },
     {
       "Command": "executeScript",
-      "Target": "var i=1; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var esc=n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&'); var rx=new RegExp('\\\\b'+esc+'\\\\b.*assigned spot','i'); var allEdit=Array.from(document.querySelectorAll('button')).filter(function(b){return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); var btn=allEdit.find(function(b){ var row=b.closest('div.m-b-0'); return row && rx.test((row.textContent||'').replace(/\\\\s+/g,' ')); }); if(!btn){ return 'NO_EDIT'; } window.__lt.activeName=n; btn.click(); return 'CLICKED';",
+      "Target": "var i=1; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var esc=n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&'); var rx=new RegExp('\\\\b'+esc+'\\\\b.*assigned spot','i'); var allEdit=Array.from(document.querySelectorAll('button')).filter(function(b){return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); function tr(b){var el=b;while(el&&el.parentElement){var p=el.parentElement;var c=Array.from(p.querySelectorAll('button')).filter(function(x){return /^edit spot$/i.test((x.textContent||'').trim());}).length;if(c>1)break;el=p;}return el;} var btn=allEdit.find(function(b){ var row=tr(b); return row && rx.test((row.textContent||'').replace(/\\\\s+/g,' ')); }); if(!btn){ return 'NO_EDIT'; } window.__lt.activeName=n; btn.click(); return 'CLICKED';",
       "Value": "editClick2",
       "Description": ""
     },
@@ -697,7 +787,7 @@ window.MACRO_TEMPLATE = {
     },
     {
       "Command": "executeScript",
-      "Target": "var i=2; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var esc=n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&'); var rx=new RegExp('\\\\b'+esc+'\\\\b.*assigned spot','i'); var allEdit=Array.from(document.querySelectorAll('button')).filter(function(b){return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); var btn=allEdit.find(function(b){ var row=b.closest('div.m-b-0'); return row && rx.test((row.textContent||'').replace(/\\\\s+/g,' ')); }); if(!btn){ return 'NO_EDIT'; } window.__lt.activeName=n; btn.click(); return 'CLICKED';",
+      "Target": "var i=2; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var esc=n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&'); var rx=new RegExp('\\\\b'+esc+'\\\\b.*assigned spot','i'); var allEdit=Array.from(document.querySelectorAll('button')).filter(function(b){return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); function tr(b){var el=b;while(el&&el.parentElement){var p=el.parentElement;var c=Array.from(p.querySelectorAll('button')).filter(function(x){return /^edit spot$/i.test((x.textContent||'').trim());}).length;if(c>1)break;el=p;}return el;} var btn=allEdit.find(function(b){ var row=tr(b); return row && rx.test((row.textContent||'').replace(/\\\\s+/g,' ')); }); if(!btn){ return 'NO_EDIT'; } window.__lt.activeName=n; btn.click(); return 'CLICKED';",
       "Value": "editClick3",
       "Description": ""
     },
@@ -739,7 +829,7 @@ window.MACRO_TEMPLATE = {
     },
     {
       "Command": "executeScript",
-      "Target": "var i=3; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var esc=n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&'); var rx=new RegExp('\\\\b'+esc+'\\\\b.*assigned spot','i'); var allEdit=Array.from(document.querySelectorAll('button')).filter(function(b){return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); var btn=allEdit.find(function(b){ var row=b.closest('div.m-b-0'); return row && rx.test((row.textContent||'').replace(/\\\\s+/g,' ')); }); if(!btn){ return 'NO_EDIT'; } window.__lt.activeName=n; btn.click(); return 'CLICKED';",
+      "Target": "var i=3; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var esc=n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&'); var rx=new RegExp('\\\\b'+esc+'\\\\b.*assigned spot','i'); var allEdit=Array.from(document.querySelectorAll('button')).filter(function(b){return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); function tr(b){var el=b;while(el&&el.parentElement){var p=el.parentElement;var c=Array.from(p.querySelectorAll('button')).filter(function(x){return /^edit spot$/i.test((x.textContent||'').trim());}).length;if(c>1)break;el=p;}return el;} var btn=allEdit.find(function(b){ var row=tr(b); return row && rx.test((row.textContent||'').replace(/\\\\s+/g,' ')); }); if(!btn){ return 'NO_EDIT'; } window.__lt.activeName=n; btn.click(); return 'CLICKED';",
       "Value": "editClick4",
       "Description": ""
     },
@@ -781,7 +871,7 @@ window.MACRO_TEMPLATE = {
     },
     {
       "Command": "executeScript",
-      "Target": "var i=4; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var esc=n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&'); var rx=new RegExp('\\\\b'+esc+'\\\\b.*assigned spot','i'); var allEdit=Array.from(document.querySelectorAll('button')).filter(function(b){return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); var btn=allEdit.find(function(b){ var row=b.closest('div.m-b-0'); return row && rx.test((row.textContent||'').replace(/\\\\s+/g,' ')); }); if(!btn){ return 'NO_EDIT'; } window.__lt.activeName=n; btn.click(); return 'CLICKED';",
+      "Target": "var i=4; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var esc=n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&'); var rx=new RegExp('\\\\b'+esc+'\\\\b.*assigned spot','i'); var allEdit=Array.from(document.querySelectorAll('button')).filter(function(b){return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); function tr(b){var el=b;while(el&&el.parentElement){var p=el.parentElement;var c=Array.from(p.querySelectorAll('button')).filter(function(x){return /^edit spot$/i.test((x.textContent||'').trim());}).length;if(c>1)break;el=p;}return el;} var btn=allEdit.find(function(b){ var row=tr(b); return row && rx.test((row.textContent||'').replace(/\\\\s+/g,' ')); }); if(!btn){ return 'NO_EDIT'; } window.__lt.activeName=n; btn.click(); return 'CLICKED';",
       "Value": "editClick5",
       "Description": ""
     },
@@ -823,7 +913,7 @@ window.MACRO_TEMPLATE = {
     },
     {
       "Command": "executeScript",
-      "Target": "var i=5; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var esc=n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&'); var rx=new RegExp('\\\\b'+esc+'\\\\b.*assigned spot','i'); var allEdit=Array.from(document.querySelectorAll('button')).filter(function(b){return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); var btn=allEdit.find(function(b){ var row=b.closest('div.m-b-0'); return row && rx.test((row.textContent||'').replace(/\\\\s+/g,' ')); }); if(!btn){ return 'NO_EDIT'; } window.__lt.activeName=n; btn.click(); return 'CLICKED';",
+      "Target": "var i=5; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var esc=n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&'); var rx=new RegExp('\\\\b'+esc+'\\\\b.*assigned spot','i'); var allEdit=Array.from(document.querySelectorAll('button')).filter(function(b){return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); function tr(b){var el=b;while(el&&el.parentElement){var p=el.parentElement;var c=Array.from(p.querySelectorAll('button')).filter(function(x){return /^edit spot$/i.test((x.textContent||'').trim());}).length;if(c>1)break;el=p;}return el;} var btn=allEdit.find(function(b){ var row=tr(b); return row && rx.test((row.textContent||'').replace(/\\\\s+/g,' ')); }); if(!btn){ return 'NO_EDIT'; } window.__lt.activeName=n; btn.click(); return 'CLICKED';",
       "Value": "editClick6",
       "Description": ""
     },
@@ -865,7 +955,7 @@ window.MACRO_TEMPLATE = {
     },
     {
       "Command": "executeScript",
-      "Target": "var i=6; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var esc=n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&'); var rx=new RegExp('\\\\b'+esc+'\\\\b.*assigned spot','i'); var allEdit=Array.from(document.querySelectorAll('button')).filter(function(b){return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); var btn=allEdit.find(function(b){ var row=b.closest('div.m-b-0'); return row && rx.test((row.textContent||'').replace(/\\\\s+/g,' ')); }); if(!btn){ return 'NO_EDIT'; } window.__lt.activeName=n; btn.click(); return 'CLICKED';",
+      "Target": "var i=6; var n=window.__lt.names[i]; var p=window.__lt.prefs[i]; if(!n||!p){ return 'SKIP'; } var esc=n.replace(/[.*+?^${}()|[\\\\]\\\\\\\\]/g,'\\\\$&'); var rx=new RegExp('\\\\b'+esc+'\\\\b.*assigned spot','i'); var allEdit=Array.from(document.querySelectorAll('button')).filter(function(b){return /^edit spot$/i.test((b.textContent||'').trim()) && b.offsetParent!==null;}); function tr(b){var el=b;while(el&&el.parentElement){var p=el.parentElement;var c=Array.from(p.querySelectorAll('button')).filter(function(x){return /^edit spot$/i.test((x.textContent||'').trim());}).length;if(c>1)break;el=p;}return el;} var btn=allEdit.find(function(b){ var row=tr(b); return row && rx.test((row.textContent||'').replace(/\\\\s+/g,' ')); }); if(!btn){ return 'NO_EDIT'; } window.__lt.activeName=n; btn.click(); return 'CLICKED';",
       "Value": "editClick7",
       "Description": ""
     },
