@@ -26,7 +26,7 @@ PART 1 — INSTALL THE CHROME PLUGIN (if not already done)
 
 STEP 1 — Load the Plugin in Chrome
 ------------------------------------
-  1. Put this folder somewhere permanent — like Documents\\GymBooking.
+  1. Extract the files, and put them in a labeled new folder somewhere you can remember, that won't get deleted — like Documents\\GymBooking.
      Do not leave it in Downloads where it might get moved or deleted.
 
   2. Open Google Chrome and go to:
